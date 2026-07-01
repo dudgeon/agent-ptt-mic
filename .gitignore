@@ -1,0 +1,15 @@
+# Pico SDK / CMake build output
+build/
+cmake-build-*/
+*.uf2
+*.elf
+*.bin
+*.hex
+*.dis
+*.map
+
+# Editor/OS cruft
+.DS_Store
+.vscode/
+.idea/
+*.swp
