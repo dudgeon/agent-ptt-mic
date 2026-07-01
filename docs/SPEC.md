@@ -323,4 +323,26 @@ Once the breadboard design is locked (M7 gate), Geoff's stated plan is a custom 
 
 ---
 
+## 16. Addendum: accelerated PCB / industrial-design track [LOCKED — explicit instruction from Geoff]
+
+On 2026-07-01, Geoff explicitly asked to begin component selection, physical
+layout, custom PCB breakout design, enclosure design, and a dimensionally
+accurate 3D mockup — ahead of the Milestone 7 gate that Locked Decision 4
+(Section 3) otherwise requires before any PCB work starts.
+
+Per this document's own tie-breaker rule (see the closing line below), a
+direct instruction from Geoff overrides a locked decision, so this is
+intentional rather than scope creep. It does not cancel Locked Decision 4 or
+the M1–M7 breadboard plan — it opens a **second, concurrent track** that
+targets a custom PCB + handheld enclosure directly, using different (SMD)
+components than the breadboard BOM in Section 7.
+
+Full requirements, the physical/aesthetic decisions Geoff gave directly, and
+the engineering follow-ons derived from them live in
+`docs/PHYSICAL_DESIGN_SPEC.md`. Do not duplicate that content here — treat
+this section as a pointer plus the record of the decision itself, so it
+isn't lost the way this whole spec exists to prevent.
+
+---
+
 *End of spec. If anything in this document conflicts with a direct instruction from Geoff, his instruction wins — flag the conflict rather than silently resolving it.*

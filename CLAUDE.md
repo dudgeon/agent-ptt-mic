@@ -27,7 +27,10 @@ approval-prompt keystrokes.
 - Mic USB interface stays enumerated continuously; push-to-talk/always-stream
   gate real-vs-silence samples in firmware, not by re-enumerating USB.
 - Breadboard first; no custom PCB work until the Milestone 7 gate in
-  `docs/SPEC.md` §12 is met and Geoff explicitly asks for it.
+  `docs/SPEC.md` §12 is met and Geoff explicitly asks for it. **Exception:**
+  Geoff explicitly asked to start a concurrent PCB/enclosure track on
+  2026-07-01 — see `docs/SPEC.md` §16 and `docs/PHYSICAL_DESIGN_SPEC.md`.
+  This does not cancel the breadboard plan; both tracks run in parallel.
 
 ## Work plan
 
@@ -40,6 +43,11 @@ HID+UAC2 descriptor) is the highest-risk step in the project.
 - `docs/SPEC.md` — frozen requirements spec (do not edit except to correct
   factual errors or record an explicit decision from Geoff).
 - `docs/STATUS.md` — live/mutable progress tracker; update as work happens.
+- `docs/PHYSICAL_DESIGN_SPEC.md` — requirements for the concurrent PCB /
+  enclosure / 3D-mockup track (component selection, physical layout, PCB and
+  enclosure requirements — not yet a finished design).
+- `docs/HANDOFF.md` — scoped deliverables for the next session on the PCB /
+  industrial-design track.
 - `firmware/` — RP2040 firmware (Pico SDK + TinyUSB, per OQ1's recommended
   default).
 - `hardware/` — BOM, wiring/pin notes, breadboard photos/notes.

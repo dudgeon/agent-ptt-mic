@@ -7,10 +7,19 @@ record; this file is the mutable "where are we right now."
 
 ## Current phase
 
-Pre-hardware-arrival. The Seeed Studio XIAO RP2040 has been ordered (see SPEC.md
-§3, §4) but has not arrived. No firmware milestone can be gated/verified on
-real hardware yet (flashing, enumeration checks, audio recording all require
-the board in hand).
+Two concurrent tracks as of 2026-07-01:
+
+1. **Breadboard firmware track (M1–M7, SPEC.md §12).** Pre-hardware-arrival —
+   the Seeed Studio XIAO RP2040 has been ordered (see SPEC.md §3, §4) but has
+   not arrived. No firmware milestone can be gated/verified on real hardware
+   yet (flashing, enumeration checks, audio recording all require the board
+   in hand).
+2. **Accelerated PCB / industrial-design track (SPEC.md §16, new).** Geoff
+   explicitly asked to start component selection, physical layout, custom PCB
+   breakout design, enclosure design, and a 3D mockup now, ahead of the M7
+   gate. Requirements and the physical/aesthetic decisions gathered so far
+   are in `docs/PHYSICAL_DESIGN_SPEC.md`. Actual component picks, PCB layout,
+   and 3D files are the next session's deliverables — see `docs/HANDOFF.md`.
 
 ## Milestone progress (SPEC.md §12)
 
@@ -58,9 +67,15 @@ Milestone progress is also tracked as a checklist in
 
 ## Immediate next steps
 
+### Breadboard track
 1. Confirm OQ1 with Geoff (or proceed on the recommended default and flag it).
 2. Set up Pico SDK + TinyUSB build environment (does not require the board).
 3. When the board arrives: work through SPEC.md §4 / issue #9 (SKU/variant
    check) before anything else.
 4. Purchase mic (OQ2) and buttons/switch (SPEC.md §7) — not urgent until M5/M6
    but lead time may be worth ordering now.
+
+### PCB / industrial-design track
+See `docs/HANDOFF.md` for the next session's scoped deliverables: finalize
+component part numbers, produce a KiCad carrier-PCB project, and produce a
+dimensionally-accurate 3D mockup (STL/STEP) of the handheld enclosure.
