@@ -1,103 +1,164 @@
 # Assembly sourcing — JLCPCB vs PCBWay (zero-solder feasibility)
 
-> **⚠ Superseded by the 2026-07-02 mounting revision — re-verify before
-> trusting this.** This research and `hardware/assembly_options.html` were
-> both done against the *original* BOM: a bare-castellated XIAO meant for
-> flush reflow, a bare SMD mic chip, and an SMD WS2812B LED. The board has
-> since changed to match the XIAO Geoff actually ordered (pre-soldered/
-> header SKU) plus a mic breakout module and a plain THT LED — see
-> `hardware/BOM.md` and `docs/PHYSICAL_DESIGN_SPEC.md` §7. The JLCPCB
-> "XIAO RP2040" library listing below (C9900176459, needs an "assembly
-> fixture") was almost certainly for the bare/castellated SKU meant for
-> automated reflow placement — a header-pin module standing off the board
-> on its own pins isn't a typical pick-and-place or wave-solder candidate.
-> **Practical effect:** full zero-solder turnkey (assembly_options.html
-> option D) is now doubtful specifically for the XIAO module — the
-> switches, mic breakout, and LED/passives are still ordinary THT vendor
-> work, but the module itself (14 big, easy pins) may be the one part
-> worth self-soldering even in an otherwise-turnkey order. This needs a
-> fresh vendor check, not a guess — flagged rather than silently
-> reconciled.
+**Current as of:** 2026-07-02, v2.1 BOM (pre-soldered/header XIAO, mic
+breakout module, addressable RGB LED — see `hardware/BOM.md`). Supersedes
+the v1 research kept as an appendix at the bottom of this file.
 
-**Researched:** 2026-07-02 (pre-revision). **Method note:** direct `WebFetch` of jlcpcb.com and
-pcbway.com pages returned HTTP 403 (bot-blocked) for every attempt, including
-inside the automated deep-research workflow (21/21 sources failed there).
-Everything below comes from search-engine-indexed snippets, triangulated
-across multiple independent queries per claim. Treat anything not phrased as
-"confirmed" as needing a live quote-tool check, not settled fact.
+**Method note, both rounds:** direct `WebFetch` of jlcpcb.com and
+pcbway.com pages returns HTTP 403 (bot-blocked) every time, including
+inside the automated deep-research workflow (21/21 sources failed there
+on the first pass). This round is built from ~14 targeted `WebSearch`
+queries against search-engine-indexed snippets — including community/
+forum sources (EEVblog, Deskthority, Hackaday.io) alongside vendor pages
+— triangulated across independent queries per claim. Treat anything not
+phrased as "confirmed" as needing a live quote-tool check, not settled
+fact.
 
-## Headline finding
+## What changed since the v1 research
 
-Every part in `hardware/BOM.md` already has a JLCPCB assembly-library listing,
+The v1 BOM had a bare SMD mic chip and a single-color LED — nothing that
+looked like a genuine "module." The v2.1 BOM has **two actual modules**
+sitting on header pins (the XIAO itself, and the mic breakout), and
+that's a fundamentally different sourcing question than "is this
+component in a vendor's parts library" — assembly houses' pick-and-place
+equipment is built to place discrete components fed from tape/reel/tray,
+not whole daughterboard modules standing off on their own header pins.
+That reframes the whole "zero solder" question.
+
+## Headline finding: JLCPCB vs. PCBWay diverge on customer-supplied parts
+
+- **JLCPCB:** "generally does not accept customer-supplied components for
+  their standard assembly service, to maintain quality control and
+  component traceability." Their help-center consignment articles
+  (`how-to-consign-parts-to-jlcpcb`, `consignment-part-terms-conditions`)
+  exist, but read as a separate, more manual process — not part of the
+  self-service instant-quote flow most small orders use.
+- **PCBWay:** explicitly supports **Kitted/Consigned** (customer supplies
+  all parts) and **Combo** (customer supplies some, PCBWay sources the
+  rest) as first-class order types, with published rules for how
+  customer-supplied parts must be packaged (reeled/taped, minimum
+  quantities per package type).
+
+**This flips last round's lean.** With a BOM that's mostly discrete
+components, JLCPCB's "everything's already in our library" story won out.
+With two actual modules that need to be supplied by the customer either
+way, PCBWay's willingness to accept consigned parts as a matter of
+routine process is the more relevant capability — *if* an assembly
+house's manual-placement fee for something as tall/irregular as these
+modules doesn't erase the benefit (see the EEVblog "massive manual
+assembly fee" thread referenced in the Q&A below; nobody should assume
+this is cheap without a real quote).
+
+## Q&A summary (v2.1 BOM)
+
+1. **Can either vendor place the XIAO or the mic breakout module?**
+   Uncertain, and this is the crux of the whole question. JLCPCB's
+   standard flow likely declines (no customer-supplied parts outside
+   their library). PCBWay's consigned/combo flow is built for exactly
+   this case in principle, but a header-pin module standing several mm
+   off the board is still an irregular-placement item — JLCPCB's own
+   fee schedule for "components that cannot be picked up by machines"
+   ($0.0157/pin manual-placement fee, "may increase if difficult") shows
+   this class of part is treated as an exception even when accepted, not
+   routine. Needs a real quote from PCBWay to know if they'll even take
+   the job, and at what fee.
+2. **THT soldering (switches, passives).** Both vendors offer wave/
+   selective-soldering for through-hole parts as a paid add-on
+   (JLCPCB: ~$3.50 flat hand-soldering labor + ~$0.0135–0.0173/joint) —
+   this part of the finding is unchanged from v1 and still solid: the 5
+   keyswitches, the passives, and (if a replacement part is picked, see
+   below) the latch switch are all ordinary vendor-assemblable work.
+3. **LED in-library:** WS2812B confirmed cheap and widely stocked —
+   LCSC lists Worldsemi WS2812B variants at $0.03–0.05/unit in reel
+   quantities; expect more like $0.30–0.60/unit for small hobbyist
+   quantities from Amazon/AliExpress-style sellers.
+4. **Part risk found this round, not previously flagged:** the C&K
+   PCM12SMTR slide switch (SW6, the latch) is listed **Obsolete** by
+   Future Electronics. DigiKey/RS Online/LCSC still show it orderable at
+   this writing, but it's not a part to build a long-term footprint
+   around — tracked as issue #16.
+5. **MOQ/pricing, updated for this board's real footprint:** the carrier
+   is 44×104mm — over JLCPCB's "$2-for-5-boards under 100×100mm" bracket
+   (104mm exceeds the 100mm side), so PCB fab alone likely runs
+   somewhere in the $8–20/5-boards range rather than the headline $2,
+   though an exact figure needs the live quote tool. PCBA setup+stencil
+   minimums cluster around $30–70 for a double-sided board at JLCPCB
+   (one referenced July-2025 example: $33.66 minimum for single-sided
+   Economic PCBA setup+stencil alone, before parts/labor). PCBWay's
+   often-cited "$5 for 5-10 boards" figure is PCB fab only, not PCBA —
+   don't conflate the two when reading vendor marketing pages.
+6. **Whole-device, one vendor:** unchanged from v1 — JLCPCB+JLC3DP have a
+   documented combined-order flow; PCBWay offers the same service breadth
+   but combined ordering leans on contacting their sales team.
+7. **Updated small-parts pricing (informs the cost artifact):**
+   - XIAO RP2040, pre-soldered: ~£19 (~$24) at UK retail (Amazon.co.uk);
+     US pricing likely somewhat lower direct from Seeed — verify before
+     ordering, regional/retailer price spread is wide for this part.
+   - Mic breakout (Adafruit SPH0645 #3421 or equivalent): $14.73 at
+     Walmart in this search; Adafruit's own direct-list price is
+     typically lower (historically ~$6–8) — use a range, reseller
+     markup varies a lot for this part.
+   - Kailh Choc V1 switches: no clean per-unit bulk price surfaced;
+     community pricing knowledge puts these around $0.60–0.90/switch in
+     small quantities.
+   - MBK blank keycaps: €0.85/cap individually (42Keebs) down to about
+     €0.69/cap in 10-packs (Keycapsss) — roughly $0.75–0.95/cap in USD.
+   - C&K PCM12SMTR (if bought now, before obsolescence bites): $0.96 at
+     DigiKey, $0.66–1.18 across other distributors.
+
+## Bottom line
+
+**Neither vendor gives a confident "yes, fully zero-solder" answer for
+this BOM** the way v1's research suggested — the two modules are the
+open question, and it genuinely depends on getting a real quote (likely
+from PCBWay, given their consigned-parts process) rather than something
+resolvable from search snippets. What *is* solid: the 5 keyswitches, the
+passives, and the LED are all routine vendor-assemblable work at either
+shop, and — the more important practical point — **hand-soldering the
+two modules yourself is not the hard problem it used to be.** In the v1
+BOM, "solder it yourself" meant reflow/hot-air for an LGA mic chip with
+no accessible leads. In v2.1, both modules are big, friendly through-hole
+header pins (14 + 6 = 20 joints, no fine pitch, no reflow) — genuinely
+one of the easier parts of this build. That changes the cost-options
+framing in `hardware/assembly_options.html`: full DIY is now realistic
+for far more people than it was under the old BOM, and the "pay a vendor"
+case rests on convenience/time, not on a skill/tooling barrier the way it
+did before.
+
+## Before committing to an order
+
+Get a real PCBWay quote for the consigned/combo path (with the two
+modules called out explicitly) before assuming either "zero solder" or
+"vendor won't touch it" — this is the one thing search snippets
+genuinely can't settle. Resolve the SW6 obsolescence (issue #16) before
+finalizing any BOM for ordering. Per `docs/HANDOFF.md`'s standing rule:
+no fab/parts order without Geoff's go-ahead.
+
+---
+
+## Appendix: v1 research (superseded, kept for the record)
+
+<details>
+<summary>Original 2026-07-02 findings, built against the bare-SMD-mic /
+flush-mount XIAO / addressable-LED-that-was-later-dropped-then-restored
+BOM. Click to expand.</summary>
+
+Every part in the v1 BOM already had a JLCPCB assembly-library listing,
 including the XIAO RP2040 module itself:
 
 | Part | JLCPCB part # | Status |
 |---|---|---|
-| Seeed XIAO RP2040 module | C9900176459 | "New Arrivals" category; **listing notes it needs an assembly fixture** |
+| Seeed XIAO RP2040 module (bare/castellated) | C9900176459 | "New Arrivals" category; listing notes it needs an assembly fixture |
 | Kailh Choc 1350 keyswitch | C9900088831 | "New Arrivals" category |
 | C&K PCM12SMTR slide switch | C221841 | established catalog listing |
-| Knowles SPH0645LM4H-B mic | C2686054 | established catalog listing |
+| Knowles SPH0645LM4H-B mic (bare chip) | C2686054 | established catalog listing |
 | WS2812B LED | C2761795 (Worldsemi WS2812B_BT) | established catalog listing |
 
-If this holds on a live quote, JLCPCB could source 100% of the BOM from its
-own stock — no consigned/customer-shipped parts needed at all.
+That listing was almost certainly for the *bare/castellated* XIAO SKU
+meant for reflow — which turned out not to be the SKU Geoff actually
+ordered, so this specific conclusion didn't carry forward. JLCPCB Economic
+vs. Standard PCBA tier rules, THT wave-soldering costs, and MOQ figures
+from that round are still accurate and repeated in the current findings
+above where still applicable.
 
-PCBWay: SPH0645LM4H-B confirmed directly (dedicated component detail page).
-WS2812B well-represented in their component/project catalog. Could **not**
-confirm a PCBWay library listing for the Kailh Choc switch or the XIAO
-module specifically — these would more likely need customer-supplied/
-consigned parts there.
-
-## Q&A summary
-
-1. **Parts tiers.** JLCPCB: Economic PCBA (pre-loaded Basic-parts feeders, no
-   per-part fee, capped at 30 pcs/design) vs. Standard PCBA (any library
-   part, flat $1.50/part-line loading fee, no quantity cap). Sensors,
-   fixture-needed parts, and anything smaller than 0201 are "Standard-only"
-   — the mic and the XIAO module almost certainly force this board onto
-   Standard PCBA. PCBWay: turnkey / consigned / combo sourcing modes;
-   didn't find an equally precise tier breakdown.
-2. **THT soldering.** JLCPCB explicitly assembles through-hole parts via
-   wave/selective soldering, billed as an add-on (~$3.50 hand-soldering
-   labor + ~$0.0135–0.0173/joint) — done by JLCPCB, not the customer.
-   PCBWay offers THT assembly too; couldn't pin down an equally detailed
-   cost breakdown.
-3. **Mic/LED in-library:** confirmed at both vendors (see table above).
-4. **Consigned XIAO module:** likely unnecessary at JLCPCB given its own
-   listing exists. If that listing's stock/price doesn't check out,
-   JLCPCB's consignment fallback exists but is pricey for a small run
-   (loose-part handling fee; overseas consignment ~$70–155 in service +
-   handling fees per the terms page). PCBWay more likely needs consignment
-   for the module.
-5. **MOQ/pricing:** JLCPCB PCBA minimum is 2 assembled boards (from a
-   minimum-5 PCB fab order) on both Economic and Standard tiers — fits the
-   2-10 unit target. PCBWay has no hard minimum but a $25 order floor.
-   Neither gave a trustworthy dollar figure for this specific board from
-   search snippets alone — needs a real quote upload.
-6. **Whole-device, one vendor:** JLCPCB + JLC3DP have a documented
-   "combine order" flow — PCBA and 3D-printed parts share one cart/
-   checkout. PCBWay offers the same service breadth (CNC, 3D printing,
-   sheet metal) but combined ordering pointed toward emailing their sales
-   team rather than an integrated cart.
-7. **Kailh Choc in automated PCBA:** has its own JLCPCB catalog part number
-   (not just generic THT support), suggesting real placement experience
-   with this exact part on their line.
-
-## Bottom line
-
-JLCPCB looks like the stronger fit for zero-customer-soldering and a
-one-vendor whole-device order: every BOM part (including the module)
-already has a library listing, THT is an explicit vendor-performed service,
-and JLCPCB+JLC3DP combine into one checkout for PCB+enclosure. PCBWay can
-very likely do the PCBA too, but the keyswitch specifically looks less
-certain to be in their own stock.
-
-## Before committing to an order
-
-Upload `hardware/pcb/companion_carrier.kicad_pcb` + the BOM to JLCPCB's live
-quote tool to confirm: real stock/price on the two "New Arrivals" listings,
-whether the module's "assembly fixture" note adds cost/MOQ restrictions, and
-actual per-unit PCBA pricing for this board. Search snippets can't verify
-any of that — this doc is a starting point for that quote, not a
-substitute for it. Per `docs/HANDOFF.md`'s standing rule: no fab/parts order
-without Geoff's go-ahead.
+</details>

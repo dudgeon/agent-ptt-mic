@@ -41,13 +41,25 @@ without checking with Geoff first.
 | U1 | 1 | Seeed Studio XIAO RP2040 — **pre-soldered** | Header pins, mounted on carrier BACK via its own presoldered pins pushed through + soldered | [LOCKED] board choice; module carries USB-C, RP2040, flash, NeoPixel | [Seeed, pre-soldered](https://www.seeedstudio.com/Seeed-Studio-XIAO-RP2040-Pre-Soldered-p-6333.html) |
 | SW1–SW5 | 5 | Kailh Choc V1 (PG1350) — Brown/tactile suggested | Through-hole switch pins + locating posts | Low-profile mechanical keyswitch: real switch feel in a handheld-thickness shell (11 mm stack vs ~18.5 mm for full MX) | Kailh via distributors (Chosfox, splitkb, MoErgo, AliExpress) |
 | — | 5 | MBK Choc-profile 1u keycaps, blank | Friction-fit on Choc stem | Blank per the minimalist/UV-print decision | Same suppliers as switches |
-| SW6 | 1 | C&K PCM12SMTR slide switch (SPDT) | Right-angle SMT, actuator past PCB edge | Latch control on the shell *side wall* per §2.3; distinct-by-feel from the keys. Kept SMD — ordinary hand-solder gull-wing pads, not a reflow-only part like the old mic chip, so no reason to swap | [C&K/Littelfuse](https://www.ckswitches.com/products/switches/product-details/Slide/PCM/PCM12SMTR/), Digi-Key `CKN10361CT-ND` |
+| SW6 | 1 | ~~C&K PCM12SMTR~~ slide switch (SPDT) — **⚠ OBSOLETE, see note** | Right-angle SMT, actuator past PCB edge | Latch control on the shell *side wall* per §2.3; distinct-by-feel from the keys. Kept SMD — ordinary hand-solder gull-wing pads, not a reflow-only part like the old mic chip, so no reason to swap the mounting style | [C&K/Littelfuse](https://www.ckswitches.com/products/switches/product-details/Slide/PCM/PCM12SMTR/), Digi-Key `CKN10361CT-ND` |
 | MK1 | 1 | I2S MEMS mic **breakout module** (e.g. Adafruit SPH0645, PID 3421) | 6-pin THT header, front side, own onboard acoustic port | Matches the original breadboard-track part (SPEC §7 OQ2) instead of a bare reflow-only chip — hand-solderable header pins | [Adafruit #3421](https://www.adafruit.com/product/3421) |
 | D1 | 1 | WS2812B (5050) or SK6812 addressable RGB LED | SMD, front side, top edge | v2.1: full RGB "for future status options," reintroduced as addressable because the pin budget only has 1 spare GPIO left (see revision note above) — driven with solid colors only, no animation requirement | Commodity |
 | C1 | 1 | 100 nF THT ceramic disc | THT, 5mm lead spacing | Mic VDD decoupling | Commodity |
 | C2 | 1 | 100 nF THT ceramic disc | THT, 5mm lead spacing | LED decoupling | Commodity |
 | C3 | 1 | 10 µF THT electrolytic/ceramic | THT, 5mm lead spacing | Bulk for LED + mic rail | Commodity |
 | R1 | 1 | 300–500 Ω 1/4W axial resistor | THT, formed leads | LED data-line series resistor (signal integrity, not current-limiting — WS2812 draws its own current) | Commodity |
+
+> **⚠ SW6 part risk, found during the v2.1 cost-research pass (2026-07-02):**
+> Future Electronics lists the C&K PCM12SMTR as **Obsolete**. DigiKey still
+> shows stock at $0.96/unit but with a "not recommended for new designs /
+> stock will not be replenished" style notice; RS Online and LCSC
+> (`C221841`) still list it as orderable at this writing. **Don't design
+> around this part long-term** — footprint/pin spacing in
+> `hardware/pcb/generate_pcb.py` (`slide_pcm12()`) will need updating once
+> a confirmed-active replacement is picked (same C&K PCM series or a
+> similar ultraminiature SMT slide switch). Tracked as an action item, not
+> yet resolved — buy remaining stock now if this exact footprint is
+> wanted, or replace before final PCB routing.
 
 Optional (decided against for v2, easy to add later): Kailh Choc hot-swap
 sockets (CPG135001S30) — v2 solders switches directly for simplicity and
