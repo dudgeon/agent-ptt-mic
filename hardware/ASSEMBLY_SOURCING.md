@@ -108,12 +108,61 @@ best-available real number for Option C/D's assembly-service line, not
 a guarantee PCBWay will place the modules without an extra manual-
 placement surcharge once they see the actual parts.
 
+### Round 3 (2026-07-02, later same day): board now routed, quotes re-run against the real BOM — same numbers hold, one new hard limit found
+
+The carrier board is now actually routed and DRC-clean (`hardware/pcb/README.md`),
+with a real Gerber zip at `hardware/pcb/fab/companion_carrier_v0_gerbers.zip`.
+**Attempted to upload it directly to both JLCPCB and PCBWay for a true
+DFM-reviewed quote — blocked, not by either vendor, but by this browser
+session's file-sharing restrictions** (the extension will only upload
+files from folders explicitly shared with the session; the repo's
+`hardware/pcb/fab/` isn't one of them). So this round re-runs the same
+manual-entry method as Round 1/2, with two upgrades: the bare-fab
+dimensions are now for the actual final board (unchanged: 44×104mm,
+2-layer), and the assembly part-counts are the real ones read off the
+routed board's BOM instead of a generic guess.
+
+- **JLCPCB bare fab: re-confirmed, unchanged.** $2.00 (with the site's
+  running "Special Offer") rising to $6.10 once an "Engineering fee"
+  line appears on recalculation — same behavior as Round 1. Shipping
+  $28.72 DHL. Total ~$31–35 for 5 boards.
+- **PCBWay bare fab: re-confirmed, unchanged.** $19.48 + $25.71 shipping
+  = $45.19.
+- **JLCPCB PCBA has no manual-entry path — confirmed by directly toggling
+  it on the live quote page.** Flipping "PCB Assembly" on with no Gerber
+  attached returns: *"Please upload Gerber files before proceeding to PCB
+  Assembly."* This is a hard, categorical requirement, not a preference —
+  unlike PCBWay, there is no dimension/part-count estimate available for
+  JLCPCB's assembly service without a real file upload. Anyone wanting a
+  JLCPCB PCBA number needs to upload the real zip themselves (or hand it
+  to a session with file-sharing permission).
+- **PCBWay Combo and Kitted/Consigned re-run with the board's real part
+  counts** (8 unique part numbers, 1 SMD part [D1], 12 THT part instances
+  [5 switches + SW6 + MK1 + U1 + C1/C2/C3 + R1] — not the earlier generic
+  9/5/8 guess): **both modes returned the identical $88.00 for 5 boards**
+  as Round 2's generic estimate. That the real BOM composition reproduces
+  the same number is a good sign the $88 figure is stable, not an
+  artifact of made-up inputs — though the caveat from Round 2 still
+  applies (calculator estimate, not an engineering-reviewed firm quote
+  for the two irregular modules specifically).
+
+**Bottom line on getting a truly firm number:** the one thing that
+still requires a human is uploading `companion_carrier_v0_gerbers.zip`
+directly at cart.jlcpcb.com/quote or pcbway.com/QuickOrderOnline.aspx —
+takes under a minute once the file's in front of you, and is the only
+way to get a real DFM-reviewed quote (copper density, exact hole count,
+solder-mask checks) rather than a dimension-based estimate. The
+dimension-based numbers above have now been independently reproduced
+three times and are a reliable stand-in until then.
+
 ### What's still open after this round
 
+- **A true Gerber-upload quote** — blocked this round by browser
+  session file-sharing, not by either vendor. See Round 3 above.
 - **PCBWay's exact stance on placing the two specific irregular modules**
   (vs. a generic same-part-count board) is still unconfirmed — the $88
   figure is a calculator estimate, not an engineering-reviewed quote.
-  Needs real Gerbers + BOM/CPL uploaded once the board is routed.
+  Needs real Gerbers + BOM/CPL uploaded (files now exist and are ready).
 - JLCPCB consignment's real-world friction (shipping modules to China,
   customs, lead time added) wasn't feasible to fully quantify without
   placing a real trial order — the fee schedule above is real and

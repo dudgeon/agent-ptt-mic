@@ -142,11 +142,21 @@ Dudgeon & Claude` per Geoff's request. Gerbers + drill + CPL exported to
 `hardware/pcb/fab/` (`companion_carrier_v0_gerbers.zip` is upload-ready
 for JLCPCB/PCBWay quoting).
 
-1. **Next: detailed vendor quotes with real files** — upload the Gerber
-   zip (+ BOM/CPL for assembly tiers) to JLCPCB/PCBWay instant quote for
-   firm numbers, replacing the dimension-only estimates in
-   `hardware/ASSEMBLY_SOURCING.md`. **No order without Geoff's
-   go-ahead** (standing rule).
+1. **Detailed vendor quotes — dimension-based re-verified, real Gerber
+   upload still open.** Same-day follow-up: bare-fab numbers re-confirmed
+   unchanged (JLCPCB $2–6.10+$28.72 shipping, PCBWay $19.48+$25.71) and
+   PCBWay's assembly estimate re-run against the board's *actual* BOM
+   part counts (8 unique/1 SMD/12 THT) — same $88/5-boards result as the
+   generic guess, reinforcing confidence. **Found JLCPCB's PCBA flow has
+   no manual-entry path at all** — it categorically requires a Gerber
+   upload, confirmed by toggling it live. Attempted to upload
+   `hardware/pcb/fab/companion_carrier_v0_gerbers.zip` directly to both
+   vendors for a true DFM-reviewed quote — blocked by this session's
+   browser-extension file-sharing restrictions, not by either vendor.
+   **Someone with the file in front of them (Geoff, or a session with
+   upload permission) can get the real firm quote in under a minute** —
+   see `hardware/ASSEMBLY_SOURCING.md` Round 3 for exact URLs and what
+   to expect. **No order without Geoff's go-ahead** (standing rule).
 2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`)
    and the routed-board renders (`hardware/pcb/fab/board_top.png`,
    `board_bottom.png`); layout deviations in
