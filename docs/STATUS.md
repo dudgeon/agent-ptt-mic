@@ -36,13 +36,39 @@ Two concurrent tracks:
    `hardware/BOM.md` has been compared against real alternatives** — it's
    explicitly marked provisional now, not final.
 
-   **⏸ Handed off 2026-07-02 to a local agent session with real browser
-   access** for a deeper research/refinement pass — see `docs/HANDOFF.md`
-   for full scope (flagship task: SW6 component survey, issue #16;
-   secondary: re-verify assembly costs with live quotes, issue #15).
-   Decisions in `hardware/BOM.md` stay open/provisional until that pass
-   reports back. Remaining after that: layout sign-off, PCB routing +
-   pre-fab footprint verification, first fit-check print.
+   **✅ Live-browser research pass completed 2026-07-02** (handed off
+   from the search-snippet session per `docs/HANDOFF.md`). Both scoped
+   deliverables done with real browser access, not search snippets:
+   - **SW6 component survey (issue #16, flagship task):** live DigiKey/
+     Mouser/LCSC parametric search across slide, toggle, rocker, and
+     rotary switch categories. **C&K OS102011MA1QN1** (THT right-angle
+     slide, $0.66–0.71, confirmed active at 3 independent distributors)
+     is the [PROPOSED] leading replacement, with E-Switch EG1218 and a
+     CIT toggle switch as alternatives — full comparison table in
+     `hardware/BOM.md`. **Not yet Geoff-confirmed** — the pick needs his
+     sign-off, and OS102011MA1QN1's body height needs a clearance check
+     against `CHOC_H_ABOVE_PCB` before it's final.
+   - **Assembly-cost re-verification (issue #15):** live JLCPCB and
+     PCBWay instant-quote tools plus JLCPCB's own fee-policy pages.
+     Corrected bare-PCB-fab cost sharply downward ($2–6/5 boards at
+     JLCPCB, not the $8–20 estimated) and found JLCPCB's overseas
+     parts-consignment process is real and documented but carries a flat
+     $85 service fee — a genuinely new cost that wasn't priced into the
+     old estimates. PCBWay's Combo/Consigned calculator quoted $88
+     assembly service for 5 boards. XIAO ($4.90, Seeed direct) and mic
+     breakout ($6.95, Adafruit direct, dimensions confirmed
+     16.7×12.7×1.8mm) pricing corrected down too. `hardware/BOM.md`,
+     `hardware/ASSEMBLY_SOURCING.md`, and `hardware/assembly_options.html`
+     all updated with citations; `hardware/design_params.py`'s
+     `MIC_BRK_L/W/H` VERIFY tags resolved and PCB/enclosure/mockup
+     regenerated (dimensions unchanged in practice — mic breakout size
+     doesn't drive `SHELL_T`).
+
+   All decisions from this pass are flagged **[PROPOSED]**, not locked —
+   Geoff still needs to confirm the SW6 pick before `slide_pcm12()` and
+   the `SLIDE_*` constants get updated. Remaining after that: layout
+   sign-off, PCB routing + pre-fab footprint verification, first
+   fit-check print.
 
 ## Milestone progress (SPEC.md §12)
 
@@ -99,18 +125,25 @@ Milestone progress is also tracked as a checklist in
    but lead time may be worth ordering now.
 
 ### PCB / industrial-design track
-1. **Next up (handed off, see `docs/HANDOFF.md`):** local-agent research
-   pass with real browser access — SW6 latch-switch component survey
-   (issue #16, flagship task) and live-quote verification of the
-   assembly-cost research (issue #15).
+1. **Next up — needs Geoff's input:** confirm the SW6 replacement pick
+   (issue #16 — survey done 2026-07-02, C&K OS102011MA1QN1 [PROPOSED] as
+   leading candidate, see `hardware/BOM.md`) and review the corrected
+   assembly-cost figures (issue #15, see `hardware/ASSEMBLY_SOURCING.md`
+   and `hardware/assembly_options.html`).
 2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`) and
    confirms/adjusts the layout deviations in `docs/PHYSICAL_DESIGN_SPEC.md`
-   §7 (thumb PTT, 2×2 grid, right-side latch) — independent of the
-   research pass, can happen in parallel.
-3. Route the carrier board in an interactive KiCad session and work the
-   pre-fab VERIFY list in `hardware/pcb/README.md` — after the SW6
-   footprint question (issue #16) resolves, since that switch's land
-   pattern is one of the things being routed.
+   §7 (thumb PTT, 2×2 grid, right-side latch) — independent of the SW6
+   pick, can happen in parallel.
+3. Once SW6 is confirmed: update `slide_pcm12()` in
+   `hardware/pcb/generate_pcb.py` and the `SLIDE_*` constants in
+   `hardware/design_params.py` to match the chosen part (including a
+   body-height clearance check against `CHOC_H_ABOVE_PCB` if
+   OS102011MA1QN1 is picked — its THT body may be taller than the SMT
+   PCM12SMTR it replaces), then route the carrier board in an interactive
+   KiCad session and work the rest of the pre-fab VERIFY list in
+   `hardware/pcb/README.md` (mic breakout dimensions already resolved
+   this pass; XIAO standoff and Choc pin handedness still need the
+   physical parts in hand).
 4. FDM fit-check print of the two shell parts (checklist at the end of
    `hardware/enclosure/README.md`). Ordering parts/fab needs Geoff's
    go-ahead first.

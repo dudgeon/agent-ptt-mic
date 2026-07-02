@@ -59,7 +59,7 @@
   (net 15 "SPARE_D9")
 
   (footprint "carrier:Kailh_Choc_V1" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 51.0 60.0)
     (attr through_hole)
     (fp_text reference "SW1" (at 0 -3.0) (layer "F.SilkS")
@@ -83,7 +83,7 @@
   )
 
   (footprint "carrier:Kailh_Choc_V1" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 69.0 60.0)
     (attr through_hole)
     (fp_text reference "SW2" (at 0 -3.0) (layer "F.SilkS")
@@ -107,7 +107,7 @@
   )
 
   (footprint "carrier:Kailh_Choc_V1" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 51.0 77.0)
     (attr through_hole)
     (fp_text reference "SW3" (at 0 -3.0) (layer "F.SilkS")
@@ -131,7 +131,7 @@
   )
 
   (footprint "carrier:Kailh_Choc_V1" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 69.0 77.0)
     (attr through_hole)
     (fp_text reference "SW4" (at 0 -3.0) (layer "F.SilkS")
@@ -155,7 +155,7 @@
   )
 
   (footprint "carrier:Kailh_Choc_V1" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 60.0 98.0)
     (attr through_hole)
     (fp_text reference "SW5" (at 0 -3.0) (layer "F.SilkS")
@@ -179,7 +179,7 @@
   )
 
   (footprint "carrier:CK_PCM12SMTR" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 80.2 46.0)
     (attr smd)
     (fp_text reference "SW6" (at 0 -3.0) (layer "F.SilkS")
@@ -199,16 +199,16 @@
   )
 
   (footprint "carrier:MicBreakout_SPH0645-style" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 60.0 40.0)
     (attr through_hole)
     (fp_text reference "MK1" (at 0 -3.0) (layer "F.SilkS")
       (effects (font (size 0.8 0.8) (thickness 0.12)))
     )
-    (fp_line (start -8.9 -6.0) (end 8.9 -6.0) (layer "F.SilkS") (width 0.12))
-    (fp_line (start 8.9 -6.0) (end 8.9 6.0) (layer "F.SilkS") (width 0.12))
-    (fp_line (start 8.9 6.0) (end -8.9 6.0) (layer "F.SilkS") (width 0.12))
-    (fp_line (start -8.9 6.0) (end -8.9 -6.0) (layer "F.SilkS") (width 0.12))
+    (fp_line (start -8.35 -6.35) (end 8.35 -6.35) (layer "F.SilkS") (width 0.12))
+    (fp_line (start 8.35 -6.35) (end 8.35 6.35) (layer "F.SilkS") (width 0.12))
+    (fp_line (start 8.35 6.35) (end -8.35 6.35) (layer "F.SilkS") (width 0.12))
+    (fp_line (start -8.35 6.35) (end -8.35 -6.35) (layer "F.SilkS") (width 0.12))
     (pad "P1" thru_hole circle (at -6.35 0.0) (size 1.8 1.8) (drill 1.0) (layers *.Cu *.Mask)
       (net 2 "3V3"))
     (pad "P2" thru_hole circle (at -3.81 0.0) (size 1.8 1.8) (drill 1.0) (layers *.Cu *.Mask)
@@ -224,7 +224,7 @@
   )
 
   (footprint "carrier:WS2812B_5050" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 74.0 38.0)
     (attr smd)
     (fp_text reference "D1" (at 0 -3.0) (layer "F.SilkS")
@@ -244,7 +244,7 @@
   )
 
   (footprint "carrier:XIAO-RP2040_preSoldered_header" (version 20240108) (generator generate_pcb.py) (layer "B.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 60.0 122.5)
     (attr through_hole)
     (fp_text reference "U1" (at 0 -3.0) (layer "B.SilkS")
@@ -292,7 +292,7 @@
   )
 
   (footprint "carrier:THT_passive" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 44.0 50.0)
     (attr through_hole)
     (fp_text reference "C1" (at 0 -3.0) (layer "F.SilkS")
@@ -309,7 +309,7 @@
   )
 
   (footprint "carrier:THT_passive" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 69.0 50.0)
     (attr through_hole)
     (fp_text reference "C2" (at 0 -3.0) (layer "F.SilkS")
@@ -326,7 +326,7 @@
   )
 
   (footprint "carrier:THT_passive" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 74.0 43.5)
     (attr through_hole)
     (fp_text reference "R1" (at 0 -3.0) (layer "F.SilkS")
@@ -343,7 +343,7 @@
   )
 
   (footprint "carrier:THT_passive" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 47.0 114.0)
     (attr through_hole)
     (fp_text reference "C3" (at 0 -3.0) (layer "F.SilkS")
@@ -360,7 +360,7 @@
   )
 
   (footprint "carrier:MountingHole_M2" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 41.5 34.0)
     (attr through_hole)
     (fp_text reference "H1" (at 0 -3.0) (layer "F.SilkS")
@@ -370,7 +370,7 @@
   )
 
   (footprint "carrier:MountingHole_M2" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 78.5 34.0)
     (attr through_hole)
     (fp_text reference "H2" (at 0 -3.0) (layer "F.SilkS")
@@ -380,7 +380,7 @@
   )
 
   (footprint "carrier:MountingHole_M2" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 41.5 124.0)
     (attr through_hole)
     (fp_text reference "H3" (at 0 -3.0) (layer "F.SilkS")
@@ -390,7 +390,7 @@
   )
 
   (footprint "carrier:MountingHole_M2" (version 20240108) (generator generate_pcb.py) (layer "F.Cu")
-    (tedit 6a45ca73)
+    (tedit 6a461b84)
     (at 78.5 124.0)
     (attr through_hole)
     (fp_text reference "H4" (at 0 -3.0) (layer "F.SilkS")

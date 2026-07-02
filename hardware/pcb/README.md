@@ -59,11 +59,17 @@ design time. Before generating gerbers:
 3. **XIAO standoff/pin length** — `design_params.py XIAO_MODULE_STANDOFF`
    (6.0mm) is an estimate for how far the module hangs off the carrier;
    measure the real pin length before finalizing the enclosure thickness.
-4. **PCM12SMTR land pattern** — approximated; pull the real drawing from the
-   C&K datasheet.
-5. **Mic breakout footprint** — `MIC_BRK_L/W` and pin pitch are
-   approximate; measure the physical breakout (Adafruit #3421 or
-   equivalent) and adjust before finalizing the front-wall window size.
+4. **SW6 land pattern (`slide_pcm12()`)** — still the PCM12SMTR footprint.
+   A deep component survey (2026-07-02, issue #16, see `../BOM.md`) found
+   C&K OS102011MA1QN1 as the leading [PROPOSED] replacement — pending
+   Geoff's sign-off. Once a pick is confirmed, this footprint (and the
+   `SLIDE_*` constants in `design_params.py`) need updating — not done
+   yet, deliberately, per the issue's scope boundary.
+5. **Mic breakout footprint** — `MIC_BRK_L`/`MIC_BRK_W`/`MIC_BRK_H`
+   **confirmed 2026-07-02** against Adafruit's own listing for #3421
+   (16.7 × 12.7 × 1.8mm) — no longer an estimate, `design_params.py`
+   updated. Pin pitch (2.54mm, 6-pin header) still assumed standard —
+   worth a quick physical check but low risk.
 6. **Choc contact-pin handedness** — pin 2 at (5.0, −3.8) assumes the common
    variant; check against a physical switch.
 7. Run DRC after routing, obviously.

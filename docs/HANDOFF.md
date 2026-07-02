@@ -1,5 +1,21 @@
 # Handoff — Local Research Agent (Pricing/Sourcing/Component Refinement)
 
+**Status: EXECUTED 2026-07-02.** Both scoped deliverables below (SW6
+survey, assembly-cost re-verification) were completed with real browser
+access in the local-agent session this handoff was written for. Full
+findings are in `hardware/BOM.md` (SW6 comparison table + [PROPOSED]
+recommendation), `hardware/ASSEMBLY_SOURCING.md` (live JLCPCB/PCBWay
+quotes, new live-verification section at the top), and
+`hardware/assembly_options.html` (recomputed cost chart). `docs/STATUS.md`
+has the current-state summary. **What's next is not another research
+pass — it's Geoff's sign-off** on the SW6 pick (C&K OS102011MA1QN1
+[PROPOSED]) before `slide_pcm12()`/`SLIDE_*` get updated and the board
+gets routed. The rest of this document is kept for historical context
+(the original scoping and "what's already decided" sections are still
+accurate) — read `hardware/BOM.md`'s SW6 callout and
+`hardware/ASSEMBLY_SOURCING.md`'s live-verification section directly for
+the actual findings rather than re-deriving them from the prompt below.
+
 **Written:** 2026-07-02, end of a session that did PCB/enclosure/mockup
 design work plus two rounds of vendor-cost research, entirely blocked from
 live browser access — direct `WebFetch` of jlcpcb.com, pcbway.com, and
@@ -171,19 +187,29 @@ BOM is provisional (see the banner at the top of `hardware/BOM.md`).
 Don't assume anything in that table is final just because it's written
 down — that's exactly the trap SW6 fell into.
 
-## Deliverables for this session
+## Deliverables for this session — all four completed 2026-07-02
 
-1. Deep component survey for SW6 (issue #16) with real candidates, real
+1. ✅ Deep component survey for SW6 (issue #16) with real candidates, real
    pricing/stock, and a clearly-flagged recommendation — not a final
-   decision unless Geoff has signed off.
-2. Live-quote-verified update to `hardware/ASSEMBLY_SOURCING.md` and
-   `hardware/assembly_options.html` (issue #15).
-3. Resolve as many `VERIFY` tags as practical with real sourced data;
+   decision unless Geoff has signed off. **Done:** comparison table in
+   `hardware/BOM.md`, C&K OS102011MA1QN1 [PROPOSED] as leading candidate.
+2. ✅ Live-quote-verified update to `hardware/ASSEMBLY_SOURCING.md` and
+   `hardware/assembly_options.html` (issue #15). **Done:** live JLCPCB/
+   PCBWay instant quotes, JLCPCB's real consignment fee schedule, live
+   component pricing from Seeed/Adafruit/splitkb.
+3. ✅ Resolve as many `VERIFY` tags as practical with real sourced data;
    update `hardware/design_params.py` and regenerate the PCB/enclosure/
-   mockup (`python3 hardware/pcb/generate_pcb.py`, `python3
+   mockup if any dimension changes. **Done:** `MIC_BRK_L/W/H` confirmed
+   against Adafruit's own listing and updated; PCB/enclosure/mockup
+   regenerated (`python3 hardware/pcb/generate_pcb.py`, `python3
    hardware/enclosure/enclosure.py`, `python3 hardware/mockup/mockup.py
-   && python3 hardware/mockup/render.py`) if any dimension changes.
-4. Update `docs/STATUS.md` and this document when done, same pattern as
+   && python3 hardware/mockup/render.py` — needed `pip install kiutils
+   cadquery trimesh` first, none were present in this environment).
+   `XIAO_MODULE_STANDOFF` and `CHOC_PIN2` remain open — they genuinely
+   need the physical parts in hand, not another search pass. SW6's own
+   `SLIDE_*` constants and `slide_pcm12()` footprint are **deliberately
+   untouched**, pending Geoff's sign-off on a replacement pick.
+4. ✅ Update `docs/STATUS.md` and this document when done, same pattern as
    every prior session in this repo.
 
 ## Constraints carried over (still apply, unchanged)

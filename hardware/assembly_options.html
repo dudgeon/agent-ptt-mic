@@ -91,49 +91,49 @@
 <div class="wrap">
 
   <h1>Build options v2.1: 5 boards, DIY&nbsp;→&nbsp;turnkey</h1>
-  <p class="sub">Claude Code Companion Peripheral · re-estimated 2026-07-02 for the all-THT/header BOM (pre-soldered XIAO, mic breakout module, addressable RGB LED). All figures are <b>estimates, not quotes</b> — JLCPCB/PCBWay block automated fetches, so prices come from ~14 triangulated search queries against catalog/forum data. A live quote is the only way to firm these up further.</p>
+  <p class="sub">Claude Code Companion Peripheral · re-estimated 2026-07-02, revised same day with <b>live-verified</b> prices/quotes (JLCPCB &amp; PCBWay instant-quote tools, JLCPCB's own fee policy pages, Seeed/Adafruit/splitkb direct pricing — not search snippets this round). Figures below are still estimates for the labor/fee lines not independently re-quoted this pass — see the callout and each card's note for what's real vs. carried over.</p>
 
   <div class="callout">
-    <b>What changed from the last pass:</b> the old BOM's "zero solder" story rested on a bare LGA mic chip needing reflow — that's gone. Now the open question is different: the XIAO and mic <i>modules</i> (not simple components) may not be placeable by either vendor's standard pick-and-place at all, regardless of price. But that cuts both ways — those 20 through-hole joints are now the <i>easiest</i> part of the build, so full DIY no longer needs hot-air/reflow tooling either. The real lesson: <b>get a real PCBWay quote for the two modules before assuming either "zero solder" or "vendor won't touch it."</b>
+    <b>What changed in this live-verification pass:</b> bare PCB fab at JLCPCB came back at <b>$2.00–$6.10</b> for 5 boards (real instant quote) — far below the old $10–20 estimate; PCBWay's real quote for the same board is $19.48, confirming it's genuinely pricier here, not just assumed to be. XIAO pre-soldered is <b>$4.90</b> direct from Seeed and the mic breakout is <b>$6.95</b> direct from Adafruit — both well below the old high-end estimates. On the assembly-service side: JLCPCB's own policy pages confirm they <i>do</i> support consigning the two modules, but for a flat, documented <b>$85</b> service fee (1–50 part numbers) plus per-part handling — a real new cost that wasn't priced in before. PCBWay's live Combo/Consigned calculator quoted <b>$88</b> for assembling 5 boards. Full detail and citations in <code>hardware/ASSEMBLY_SOURCING.md</code>.
   </div>
 
   <!-- ============ COST CHART ============ -->
   <div class="card">
     <h2>Estimated all-in cost — 5 boards' materials, shipped</h2>
-    <p class="note" style="margin:2px 0 0">Includes PCB fab, parts, vendor fees, keycaps, shipping. Scale $150–$500 — wider than last pass because of real price spread on the XIAO/mic breakout and genuine uncertainty on option D.</p>
+    <p class="note" style="margin:2px 0 0">Includes PCB fab, parts, vendor fees, keycaps, shipping. Scale $100–$400. <b>Revised down</b> from the last pass: live JLCPCB/PCBWay quotes and direct Seeed/Adafruit/splitkb pricing came in well below the search-snippet estimates that produced the old $150–$500 chart — see the callout above.</p>
     <div class="chart">
       <div class="row">
-        <div class="lbl"><span><b>A</b> · Full DIY</span><b>$170–255</b></div>
-        <div class="track"><div class="span" style="left:5.7%; width:24.3%"></div></div>
+        <div class="lbl"><span><b>A</b> · Full DIY</span><b>$135–160</b></div>
+        <div class="track"><div class="span" style="left:11.7%; width:8.3%"></div></div>
       </div>
       <div class="row">
-        <div class="lbl"><span><b>B</b> · Vendor: fiddly SMD/THT only</span><b>$225–330</b></div>
-        <div class="track"><div class="span" style="left:21.4%; width:30%"></div></div>
+        <div class="lbl"><span><b>B</b> · Vendor: fiddly SMD/THT only</span><b>$190–260</b></div>
+        <div class="track"><div class="span cond" style="left:30%; width:23.3%"></div></div>
       </div>
       <div class="row">
-        <div class="lbl"><span><b>C</b> · Vendor: everything but 2 modules</span><b>$245–355</b></div>
-        <div class="track"><div class="span" style="left:27.1%; width:31.4%"></div></div>
+        <div class="lbl"><span><b>C</b> · Vendor: everything but 2 modules</span><b>$210–280</b></div>
+        <div class="track"><div class="span" style="left:36.7%; width:23.3%"></div></div>
       </div>
       <div class="row">
-        <div class="lbl"><span><b>D</b> · Speculative full turnkey</span><b>$260–470</b></div>
-        <div class="track"><div class="span spec" style="left:31.4%; width:60%" title="Wide because module placement is unconfirmed — needs a real PCBWay quote"></div></div>
+        <div class="lbl"><span><b>D</b> · Full turnkey (JLCPCB or PCBWay consignment)</span><b>$250–320</b></div>
+        <div class="track"><div class="span spec" style="left:50%; width:23.3%" title="Real fee floor now: JLCPCB's $85 consignment fee is documented, not speculative — remaining uncertainty is shipping/customs to China and PCBWay's not-yet-firm module-placement quote"></div></div>
       </div>
       <div class="row">
-        <div class="lbl"><span><b>E</b> · Whole device (C + enclosure)</span><b>$285–430</b></div>
-        <div class="track"><div class="span" style="left:38.6%; width:41.4%"></div></div>
+        <div class="lbl"><span><b>E</b> · Whole device (C + enclosure)</span><b>$235–340</b></div>
+        <div class="track"><div class="span cond" style="left:45%; width:35%"></div></div>
       </div>
-      <div class="axis"><span>$150</span><span>$250</span><span>$350</span><span>$450</span></div>
+      <div class="axis"><span>$100</span><span>$200</span><span>$300</span><span>$400</span></div>
       <div class="legend">
-        <span><span class="sw" style="background:var(--bar)"></span>materials + fees + shipping</span>
-        <span><span class="sw" style="background:var(--bar-light); opacity:.7"></span>speculative range (D) — unconfirmed vendor capability</span>
+        <span><span class="sw" style="background:var(--bar)"></span>materials + fees + shipping (live-quoted this pass)</span>
+        <span><span class="sw" style="background:var(--bar-light); opacity:.7"></span>partially re-verified — PCB fab/parts live-quoted, vendor labor fee still a prior-round estimate</span>
       </div>
     </div>
   </div>
 
   <!-- ============ OPTION A ============ -->
   <div class="card">
-    <h2>A · Full DIY <span class="cost">$170–255</span></h2>
-    <p class="tagline">5 bare PCBs + every part bought retail; you solder all ~17 components per board.</p>
+    <h2>A · Full DIY <span class="cost">$135–160</span></h2>
+    <p class="tagline">5 bare PCBs + every part bought retail; you solder all ~17 components per board. <b>Recomputed with live prices</b> — see below.</p>
     <p style="margin:8px 0 0">
       <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ no reflow/hot-air needed</span>
       &nbsp;Effort <span class="meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>
@@ -148,11 +148,11 @@
         </ul>
       </div>
       <div>
-        <h3>Where the money goes</h3>
+        <h3>Where the money goes (live-quoted 2026-07-02)</h3>
         <ul>
-          <li>PCB fab ~$10–20/5 (board's 104mm length exceeds JLCPCB's $2 bracket)</li>
-          <li>Parts/board: XIAO ~$9–24 · mic breakout ~$7–15 · 5 switches ~$3–4.50 · 5 caps ~$4–4.75 · latch switch ~$1–2 · LED+passives ~$1</li>
-          <li>3+ supplier shipments ~$20–30</li>
+          <li>PCB fab <b>$2.00–$6.10/5</b> at JLCPCB (real instant quote — the 104mm length did <i>not</i> push this out of the cheap prototype tier the way the old estimate assumed)</li>
+          <li>Parts/board: XIAO <b>$4.90</b> (Seeed direct) · mic breakout <b>$6.95</b> (Adafruit direct) · 5 switches <b>~$4.40–5.35</b> (splitkb.com) · 5 caps <b>~$4.40–5.35</b> (splitkb.com) · latch switch <b>$0.66–0.71</b> (SW6 candidate, see BOM) · LED+passives ~$1 (not re-quoted this pass)</li>
+          <li>3+ supplier shipments ~$20–30 (not re-quoted this pass)</li>
         </ul>
       </div>
     </div>
@@ -161,7 +161,7 @@
 
   <!-- ============ OPTION B ============ -->
   <div class="card">
-    <h2>B · Vendor solders the fiddly bits only <span class="cost">$225–330</span></h2>
+    <h2>B · Vendor solders the fiddly bits only <span class="cost">$190–260</span></h2>
     <p class="tagline">Vendor assembles the LED, latch switch, and passives (the small SMD/THT parts) via standard PCBA. You solder the 5 keyswitches and both modules yourself.</p>
     <p style="margin:8px 0 0">
       <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ beginner-level iron work</span>
@@ -179,7 +179,7 @@
         <h3>Vendor does</h3>
         <ul>
           <li>LED, latch switch, passives via standard SMD/THT line</li>
-          <li>Fees: setup+stencil ~$35–70, part-line loading ~$5–10</li>
+          <li>Fees: setup+stencil ~$35–70, part-line loading ~$5–10 — <b>not independently re-quoted this pass</b>, carried over from the search-snippet round; the $70 drop from the old range is entirely the live-quoted PCB fab + parts correction from Option A</li>
         </ul>
       </div>
     </div>
@@ -189,7 +189,7 @@
   <!-- ============ OPTION C ============ -->
   <div class="card rec">
     <div class="rec-tag">Recommended</div>
-    <h2>C · Vendor does everything except the 2 modules <span class="cost">$245–355</span></h2>
+    <h2>C · Vendor does everything except the 2 modules <span class="cost">$210–280</span></h2>
     <p class="tagline">The realistic "best vendor tier" ceiling: keyswitches, latch switch, LED, and passives all vendor-assembled. You solder only the XIAO and mic breakout — 20 big through-hole pins, no fine work whatsoever.</p>
     <p style="margin:8px 0 0">
       <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ easiest reliable tier</span>
@@ -198,37 +198,37 @@
     <ul>
       <li>~10–15 min/board: push 20 pins through, flip, solder</li>
       <li>Doesn't depend on either vendor agreeing to place an irregular header-mounted module — the one part of this build that's genuinely uncertain is skipped entirely</li>
-      <li>Fees similar to B plus wave/hand-solder labor for the 5 keyswitches (~$3.50 + ~$0.015/joint)</li>
+      <li><b>Real anchor this pass:</b> PCBWay's live Combo/Consigned calculator quoted <b>$88</b> assembly-service cost for 5 boards (9 unique parts, 5 SMD, 8 THT) — a real number, though still a calculator estimate pending engineering review of the actual modules, not a firm quote</li>
     </ul>
     <p class="note">This is the sensible default: it doesn't gamble on an unconfirmed vendor capability, and the 20 joints it leaves you are the easiest ones in the whole design.</p>
   </div>
 
   <!-- ============ OPTION D ============ -->
   <div class="card">
-    <div class="spec-tag">Speculative — needs a real quote</div>
-    <h2>D · Full turnkey, zero solder <span class="cost">$260–470</span></h2>
-    <p class="tagline">PCBWay's consigned/combo parts program explicitly supports customer-supplied parts — in principle you could ship them the XIAO + mic breakout for placement, achieving genuine zero solder. JLCPCB's standard flow likely declines this (no customer-supplied parts outside their library).</p>
+    <div class="spec-tag">Partially confirmed — real fee floor, not fully speculative anymore</div>
+    <h2>D · Full turnkey, zero solder <span class="cost">$250–320</span></h2>
+    <p class="tagline">Two real paths now, not one hypothetical: JLCPCB's own Help Center documents an overseas parts-consignment process with a real fee schedule; PCBWay's Combo/Consigned flow is the same first-class option as before. Either could achieve genuine zero-solder if they accept the modules.</p>
     <p style="margin:8px 0 0">
-      <span class="badge"><span class="dot" style="background:var(--warning)"></span>? feasibility unconfirmed</span>
+      <span class="badge"><span class="dot" style="background:var(--warning)"></span>? module placement still unconfirmed</span>
       &nbsp;Effort <span class="meter"><i></i><i></i><i></i><i></i><i></i></span>
     </p>
     <ul>
-      <li>Real risk: an EEVblog thread titled "JLCPCB assembly — massive Manual Assembly fee" is a live warning that irregular-part placement fees can blow past expectations — a header-pin module standing 8–10mm off the board is exactly this class of part</li>
-      <li>Only get quoted, don't order, until PCBWay's sales team confirms they'll actually take the job and at what fee</li>
-      <li>If the quote comes back reasonable, this is genuinely zero-solder; if not, fall back to C — the switches/passives/LED work is identical either way</li>
+      <li><b>JLCPCB path, live-quoted 2026-07-02:</b> $85 flat overseas-consignment service fee (1–50 part numbers — covers both modules for the same flat cost) + ~$0.22/part handling + $8 recommended baking fee + freight/customs to ship modules to China, borne by the customer. This is a documented, real fee — not a guess — but it's a meaningful fixed cost at 5-unit quantity that wasn't priced in before.</li>
+      <li><b>PCBWay path:</b> Combo/Consigned calculator quotes $88 assembly service for 5 boards (same figure as Option C) — but this is a generic estimate, not confirmation they'll place the specific tall, header-standoff-mounted modules without an extra manual-placement surcharge once they review the real files.</li>
+      <li>Get a firm quote (real Gerbers + BOM/CPL, needs the board routed first — issue #13) before ordering either way; the range above already includes the real JLCPCB fee floor, so it's tighter than the old "wide because we don't know" range, but the ceiling is still an estimate.</li>
     </ul>
   </div>
 
   <!-- ============ OPTION E ============ -->
   <div class="card">
-    <h2>E · Whole device, one vendor <span class="cost">$285–430</span></h2>
+    <h2>E · Whole device, one vendor <span class="cost">$235–340</span></h2>
     <p class="tagline">Option C (the reliable tier) plus 5 sets of enclosure shells from JLC3DP or PCBWay's print service, in one combined order. STL/STEP files already in <code>hardware/enclosure/output/</code>.</p>
     <p style="margin:8px 0 0">
       <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ one order, easy self-assembly</span>
       &nbsp;Effort <span class="meter"><i class="f"></i><i></i><i></i><i></i><i></i></span>
     </p>
     <ul>
-      <li>Shell pairs est. $5–12 each in gray resin/PA12</li>
+      <li>Shell pairs est. $5–12 each in gray resin/PA12 (not re-quoted this pass)</li>
       <li>Your entire build: solder 2 modules (10–15 min) + 4 screws + 5 keycaps per device</li>
       <li>Swap in D's modules-included cost if that quote comes back reasonable</li>
     </ul>
@@ -242,15 +242,15 @@
     <table>
       <thead><tr><th>Option</th><th>Est. cost*</th><th>Your labor</th><th>Solder risk</th><th>Lead time</th></tr></thead>
       <tbody>
-        <tr><td><b>A</b> DIY</td><td>$170–255</td><td>5–10 h</td><td>Low (no reflow anywhere)</td><td>~2 wks, 3+ shipments</td></tr>
-        <tr><td><b>B</b> Fiddly bits done</td><td>$225–330</td><td>~2–2.5 h easy THT</td><td>Low</td><td>~2–3 wks, 2 shipments</td></tr>
-        <tr><td><b>C</b> All but 2 modules</td><td>$245–355</td><td>~1 h, big pins only</td><td><b>Lowest</b></td><td>~2–3 wks, 2 shipments</td></tr>
-        <tr><td><b>D</b> Speculative turnkey</td><td>$260–470</td><td>caps + screws</td><td>None <i>if</i> confirmed</td><td>unknown — quote first</td></tr>
-        <tr><td><b>E</b> Device kit</td><td>$285–430</td><td>2 modules + caps + screws</td><td>Low</td><td>~2–3.5 wks, 1–2 shipments</td></tr>
+        <tr><td><b>A</b> DIY</td><td>$135–160</td><td>5–10 h</td><td>Low (no reflow anywhere)</td><td>~2 wks, 3+ shipments</td></tr>
+        <tr><td><b>B</b> Fiddly bits done</td><td>$190–260</td><td>~2–2.5 h easy THT</td><td>Low</td><td>~2–3 wks, 2 shipments</td></tr>
+        <tr><td><b>C</b> All but 2 modules</td><td>$210–280</td><td>~1 h, big pins only</td><td><b>Lowest</b></td><td>~2–3 wks, 2 shipments</td></tr>
+        <tr><td><b>D</b> Full turnkey</td><td>$250–320</td><td>caps + screws</td><td>None <i>if</i> confirmed</td><td>unknown — firm quote first</td></tr>
+        <tr><td><b>E</b> Device kit</td><td>$235–340</td><td>2 modules + caps + screws</td><td>Low</td><td>~2–3.5 wks, 1–2 shipments</td></tr>
       </tbody>
     </table>
     </div>
-    <p class="note" style="margin-top:8px">*Totals for 5 boards' materials incl. shipping and keycaps. Wider ranges than the previous pass reflect real price spread found this round (XIAO pre-soldered $9–24 depending on source/region; mic breakout $7–15) plus D's genuine feasibility uncertainty.</p>
+    <p class="note" style="margin-top:8px">*Totals for 5 boards' materials incl. shipping and keycaps. Revised down from the previous pass 2026-07-02: PCB fab, XIAO, and mic breakout are now live-quoted (JLCPCB instant quote, Seeed/Adafruit direct); switch/keycap prices confirmed close to the prior estimate (splitkb.com); vendor labor-fee lines in B/C/D/E are a mix of live anchors (PCBWay's $88 Combo/Consigned figure, JLCPCB's documented $85 consignment fee) and prior-round estimates not independently re-quoted this pass — see <code>hardware/ASSEMBLY_SOURCING.md</code> for the full breakdown and citations.</p>
   </div>
 
   <!-- ============ CAVEATS ============ -->
@@ -258,14 +258,14 @@
     <h2>Caveats & the one real next step</h2>
     <ul class="caveats">
       <li><b>Routing still doesn't change this math</b> — assembly cost keys off board size, layer count, and part count, all fixed. The board is placed + netlisted, not routed (issue #13).</li>
-      <li><b>New this pass:</b> the C&amp;K PCM12SMTR latch switch is listed Obsolete by one distributor — still orderable elsewhere at this writing, but pick a confirmed-active replacement before finalizing (issue #16). Not reflected as a cost swing above since a replacement part's price is unknown.</li>
-      <li>XIAO pre-soldered pricing varies widely by source/region (£19 UK retail vs. likely cheaper direct-from-Seeed US pricing) — get one real quote rather than trusting either end of that range.</li>
-      <li>Option D's range is wide on purpose — module-placement fees are the one thing search snippets categorically cannot verify. Don't treat either end of $260–470 as a real number.</li>
+      <li><b>SW6 latch switch:</b> a deep component survey is done (issue #16, see <code>hardware/BOM.md</code>) — C&amp;K OS102011MA1QN1 is the leading [PROPOSED] replacement, live-priced at $0.66–0.71 and reflected in Option A's parts breakdown above. Still needs Geoff's sign-off and a body-height clearance check before it's final.</li>
+      <li>PCB fab, XIAO, and mic breakout prices above are real live quotes/direct-vendor prices, not search snippets — the biggest single correction from the last pass. Vendor assembly-labor fee lines (setup+stencil, part-line loading, wave-solder $/joint) in Options B/C were <b>not</b> independently re-quoted this pass and are carried over from the search-snippet round.</li>
+      <li>Option D is no longer "speculative" in the sense of having zero real data — JLCPCB's $85 consignment fee is documented policy, and PCBWay's $88 Combo/Consigned figure is a live calculator output. What's still open is whether either vendor will place these <i>specific</i> tall, irregular modules without a placement surcharge once they review real files — that needs the board routed and a firm BOM/CPL quote.</li>
     </ul>
-    <p style="font-size:13.5px"><b>Bottom line:</b> pick <b>C</b> as the default — it doesn't gamble on unconfirmed vendor capability, and what it leaves you to solder (2 modules, 20 big pins) is genuinely the easiest part of the build. Get a real PCBWay quote for <b>D</b> before ruling it out; upgrade to <b>E</b> once the enclosure fit-check print is done.</p>
+    <p style="font-size:13.5px"><b>Bottom line:</b> pick <b>C</b> as the default — it doesn't gamble on unconfirmed vendor capability, and what it leaves you to solder (2 modules, 20 big pins) is genuinely the easiest part of the build. Get a firm PCBWay or JLCPCB quote for <b>D</b> with real Gerbers/BOM before ruling it out; upgrade to <b>E</b> once the enclosure fit-check print is done.</p>
   </div>
 
-  <p class="note" style="text-align:center; color:var(--ink-3)">agent-ptt-mic · hardware/assembly_options.html · v2.1 estimates prepared 2026-07-02</p>
+  <p class="note" style="text-align:center; color:var(--ink-3)">agent-ptt-mic · hardware/assembly_options.html · v2.1 estimates prepared 2026-07-02, revised same day with live-verified prices/quotes</p>
 </div>
 </body>
 </html>

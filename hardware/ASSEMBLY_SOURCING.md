@@ -4,15 +4,135 @@
 breakout module, addressable RGB LED — see `hardware/BOM.md`). Supersedes
 the v1 research kept as an appendix at the bottom of this file.
 
-**Method note, both rounds:** direct `WebFetch` of jlcpcb.com and
+**Two research rounds went into this doc:** an initial search-snippet
+round (below, "search-snippet round" heading) built entirely from
+`WebSearch` because direct `WebFetch` of jlcpcb.com/pcbway.com returned
+HTTP 403 every time — and a follow-up round on 2026-07-02 **with real
+browser access** that re-verified the key open questions against live
+vendor tools and documentation. The live-verification findings are the
+most current and most trustworthy numbers in this file; the
+search-snippet section is kept for its still-useful qualitative analysis
+but its specific price figures are superseded where the live round found
+different numbers.
+
+## Live-verification round (2026-07-02, real browser access)
+
+**Method:** live JLCPCB and PCBWay instant-quote tools, JLCPCB's own
+Help Center policy pages, and PCBWay's Assembly quote calculator —
+actual tool output, not search snippets. Board dimensions used: 44×104mm,
+2-layer, qty 5, matching `hardware/design_params.py` `PCB_W`/`PCB_L`.
+(The board is placed+netlisted but not yet routed — issue #13 — so this
+is a dimension/qty/layer-count quote, not a full Gerber-based DFM quote;
+real copper density could shift the number slightly once routing is
+done, but fab pricing at this tier is driven mostly by size/layers/qty.)
+
+### Bare PCB fab: JLCPCB is dramatically cheaper than PCBWay for this board
+
+| Vendor | Bare PCB cost (5 pcs) | Shipping (DHL, 2–4 days) | Total | Source |
+|---|---|---|---|---|
+| **JLCPCB** | **$2.00–$6.10** (varied between two identical-input quote runs — see note) | $28.72 | ~$31–35 | Live instant quote, [cart.jlcpcb.com/quote](https://cart.jlcpcb.com/quote), 2026-07-02 |
+| **PCBWay** | $19.48 | $25.71 | $45.19 | Live instant quote, [pcbway.com/QuickOrderOnline.aspx](https://www.pcbway.com/QuickOrderOnline.aspx), 2026-07-02 |
+
+This **corrects the prior estimate** of "$8–20/5-boards" downward for
+JLCPCB — the 104mm side does not push this board out of JLCPCB's cheap
+prototype tier the way the search-snippet round assumed. PCBWay is a
+real, live-confirmed ~2–9x more expensive than JLCPCB for bare fab at
+this specific size/qty, not a rough guess. (JLCPCB's own quote UI showed
+$2.00 on the first pass and $6.10 after toggling build-time/other
+options — the $4.00 delta was an "Engineering fee" that appeared on the
+second calculation; re-verify at order time, but either figure is far
+below the old estimate.)
+
+### PCBA / consigned parts: JLCPCB officially supports it (with real, and real-ly not cheap, fees) — corrects the prior "JLCPCB likely declines" assumption
+
+The prior round assumed JLCPCB's standard flow declines customer-supplied
+parts. **That's wrong.** JLCPCB's own Help Center documents an overseas
+consignment process (["How to consign parts to
+JLCPCB"](https://jlcpcb.com/help/article/how-to-consign-parts-to-jlcpcb),
+["Consignment Part Terms &
+Conditions"](https://jlcpcb.com/help/article/consignment-part-terms-conditions),
+both fetched live 2026-07-02) — but it comes with real, documented fees
+that change the economics for a small prototype run:
+
+- **Overseas consignment service fee: $70 per 50 part numbers + $15
+  handling = $85 flat for 1–50 part numbers.** This is a **fixed fee per
+  order, not per unit** — consigning just the XIAO module and the mic
+  breakout (2 part numbers) costs the same $85 as consigning 50 different
+  part numbers. For a 5-board prototype run this fee alone roughly
+  doubles the project's total cost; it amortizes away only at much higher
+  unit volumes.
+- **Loose/separate-component fee:** $0.142/piece, since header-mounted
+  modules aren't tape-and-reel and can't go straight onto the P&P line.
+- **Manual handling fee:** $0.017/pin for parts with ≤5 pins, capped at
+  $0.078/component for parts with more pins — both the XIAO (14 pins)
+  and the mic breakout (6 pins) hit the $0.078 cap.
+- **Recommended baking fee for moisture-sensitive modules:** $8/48 hours.
+- Freight to ship the modules to JLCPCB's China warehouse, customs/duties
+  on the way there, and (if picking up unused consigned stock afterward)
+  return freight/customs are all **the customer's responsibility**, not
+  included in any of the above.
+- Each consigned part number needs "additional quantity... for attrition
+  or minimum assembly requirement" — JLCPCB doesn't guarantee the full
+  order builds without spare units.
+
+**Net effect on Option D (`hardware/assembly_options.html`):** genuine
+zero-solder via JLCPCB consignment is real and documented, but for a
+5-unit prototype run the ~$85 flat service fee plus per-component
+handling is a **new, previously-unknown fixed cost** that was not
+priced into the old $260–470 estimate. This makes Option D *less*
+attractive at prototype quantities than previously assumed, not more —
+see the updated Option D figure in `assembly_options.html`.
+
+### PCBA: PCBWay Combo/Consigned — real calculator estimate obtained
+
+PCBWay's live SMT Assembly quote tool ([pcbway.com/quotesmt.aspx](https://www.pcbway.com/quotesmt.aspx))
+confirms the "Combo" (customer supplies some parts) and "Kitted or
+Consigned" (customer supplies all parts) options exist as first-class,
+selectable order types — matching the prior round's finding. Filling in
+representative BOM stats for this board (9 unique part numbers, 5 SMD
+parts, 8 THT parts) at qty 5 in **both** modes returned the same
+estimate:
+
+- **Assembly service cost: $88.00 for 5 boards** ($17.60/board), before
+  PCB fab cost and before the value of the parts themselves.
+- Shipping quoted separately at $27.27 (a promotional discount canceled
+  it out to $0 in this specific quote run — don't rely on that holding).
+
+**Caveat:** this is PCBWay's generic calculator estimate from
+part-count inputs, not a firm quote — it does not yet reflect PCBWay's
+engineering review of the two irregular, tall, header-standoff-mounted
+modules specifically. A firm number requires uploading real Gerbers + a
+BOM/CPL with the actual XIAO and mic breakout parts called out, which
+needs the board routed first (issue #13). Treat $88 as the current
+best-available real number for Option C/D's assembly-service line, not
+a guarantee PCBWay will place the modules without an extra manual-
+placement surcharge once they see the actual parts.
+
+### What's still open after this round
+
+- **PCBWay's exact stance on placing the two specific irregular modules**
+  (vs. a generic same-part-count board) is still unconfirmed — the $88
+  figure is a calculator estimate, not an engineering-reviewed quote.
+  Needs real Gerbers + BOM/CPL uploaded once the board is routed.
+- JLCPCB consignment's real-world friction (shipping modules to China,
+  customs, lead time added) wasn't feasible to fully quantify without
+  placing a real trial order — the fee schedule above is real and
+  documented, but total elapsed time for a consignment order is still an
+  estimate.
+
+## Search-snippet round (superseded numbers below, kept for qualitative analysis)
+
+**Method note, this round:** direct `WebFetch` of jlcpcb.com and
 pcbway.com pages returns HTTP 403 (bot-blocked) every time, including
 inside the automated deep-research workflow (21/21 sources failed there
 on the first pass). This round is built from ~14 targeted `WebSearch`
 queries against search-engine-indexed snippets — including community/
 forum sources (EEVblog, Deskthority, Hackaday.io) alongside vendor pages
-— triangulated across independent queries per claim. Treat anything not
-phrased as "confirmed" as needing a live quote-tool check, not settled
-fact.
+— triangulated across independent queries per claim. **Its specific
+price figures for bare PCB fab and the JLCPCB consignment stance are
+superseded by the live-verification round above** — the qualitative
+analysis below (module-placement uncertainty, THT-soldering-is-easy
+conclusion, etc.) still holds.
 
 ## What changed since the v1 research
 
@@ -81,7 +201,9 @@ this is cheap without a real quote).
    is 44×104mm — over JLCPCB's "$2-for-5-boards under 100×100mm" bracket
    (104mm exceeds the 100mm side), so PCB fab alone likely runs
    somewhere in the $8–20/5-boards range rather than the headline $2,
-   though an exact figure needs the live quote tool. PCBA setup+stencil
+   though an exact figure needs the live quote tool. **Superseded —
+   see the live-verification round above: JLCPCB's real live quote for
+   this exact size/qty came back at $2.00–$6.10, not $8–20.** PCBA setup+stencil
    minimums cluster around $30–70 for a double-sided board at JLCPCB
    (one referenced July-2025 example: $33.66 minimum for single-sided
    Economic PCBA setup+stencil alone, before parts/labor). PCBWay's
@@ -90,7 +212,15 @@ this is cheap without a real quote).
 6. **Whole-device, one vendor:** unchanged from v1 — JLCPCB+JLC3DP have a
    documented combined-order flow; PCBWay offers the same service breadth
    but combined ordering leans on contacting their sales team.
-7. **Updated small-parts pricing (informs the cost artifact):**
+7. **Updated small-parts pricing (informs the cost artifact):** **all
+   four figures below superseded by live prices confirmed 2026-07-02 —
+   see `hardware/BOM.md`'s Electronics table for citations.** XIAO
+   pre-soldered is **$4.90 direct from Seeed** (not $24), mic breakout is
+   **$6.95 direct from Adafruit** (matching the low end of the old
+   range, not the $14.73 reseller figure), Kailh Choc switches are
+   **≈$0.90–1.05/switch** and MBK caps **≈$0.90–1.05/cap** (both from
+   splitkb.com, matching the old estimates closely). Original
+   search-snippet figures kept below for the record:
    - XIAO RP2040, pre-soldered: ~£19 (~$24) at UK retail (Amazon.co.uk);
      US pricing likely somewhat lower direct from Seeed — verify before
      ordering, regional/retailer price spread is wide for this part.
@@ -125,14 +255,31 @@ for far more people than it was under the old BOM, and the "pay a vendor"
 case rests on convenience/time, not on a skill/tooling barrier the way it
 did before.
 
+**Update from the 2026-07-02 live-verification round:** the "genuinely
+depends on getting a real quote" conclusion above held up — but the real
+quote changed the shape of the answer. JLCPCB *does* support consigning
+the two modules (contrary to the prior assumption it would decline), but
+the real, documented $85 flat overseas-consignment fee (plus per-part
+handling) makes that path **less** attractive at 5-unit prototype
+quantities than assumed, not more. PCBWay's Combo/Consigned calculator
+returned a real $88 assembly-service estimate for 5 boards, which is
+useful but still not an engineering-reviewed commitment to place the
+specific irregular modules. Bare PCB fab is now confirmed cheap at
+JLCPCB ($2–6 for 5 boards) and confirmed markedly pricier at PCBWay
+($19.48) for this exact board size — a genuine, not estimated, reason to
+default to JLCPCB for bare fab regardless of which vendor (if any) ends
+up doing assembly.
+
 ## Before committing to an order
 
-Get a real PCBWay quote for the consigned/combo path (with the two
-modules called out explicitly) before assuming either "zero solder" or
-"vendor won't touch it" — this is the one thing search snippets
-genuinely can't settle. Resolve the SW6 obsolescence (issue #16) before
-finalizing any BOM for ordering. Per `docs/HANDOFF.md`'s standing rule:
-no fab/parts order without Geoff's go-ahead.
+Get a **firm** PCBWay quote for the consigned/combo path with real
+Gerbers + BOM/CPL and the two modules called out explicitly (the $88
+figure above is a calculator estimate from part counts, not an
+engineering-reviewed quote) — this needs the board routed first (issue
+#13). Resolve the SW6 replacement pick (issue #16 — survey done, pick
+still needs Geoff's sign-off, see `hardware/BOM.md`) before finalizing
+any BOM for ordering. Per `docs/HANDOFF.md`'s standing rule: no fab/parts
+order without Geoff's go-ahead.
 
 ---
 

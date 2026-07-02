@@ -84,12 +84,14 @@ KEY_PITCH_Y = 17.0
 # --------------------------------------------------------------------------
 # I2S MEMS mic BREAKOUT MODULE (e.g. Adafruit SPH0645, PID 3421) -- same
 # part family as the breadboard-track BOM (docs/SPEC.md OQ2), not the bare
-# SMD chip used in the previous PCB revision. Dimensions approximate --
-# VERIFY against the physical breakout before finalizing enclosure cutout.
+# SMD chip used in the previous PCB revision. Dimensions confirmed 2026-07-02
+# against Adafruit's own product listing (adafruit.com/product/3421,
+# "Technical Details": "Product Dimensions: 16.7mm x 12.7mm x 1.8mm") --
+# live-verified, no longer an estimate.
 # --------------------------------------------------------------------------
-MIC_BRK_L = 17.8          # breakout PCB length (approx, VERIFY)
-MIC_BRK_W = 12.0          # breakout PCB width (approx, VERIFY)
-MIC_BRK_H = 1.6           # breakout PCB + capsule, low profile (approx)
+MIC_BRK_L = 16.7          # breakout PCB length (confirmed, Adafruit listing)
+MIC_BRK_W = 12.7          # breakout PCB width (confirmed, Adafruit listing)
+MIC_BRK_H = 1.8           # breakout PCB + capsule (confirmed, Adafruit listing)
 MIC_BRK_PINS = 6          # 3V, GND, BCLK, DOUT, LRCL, SEL -- matches the
                           # breadboard-track wiring in docs/SPEC.md §8
 MIC_BRK_PIN_PITCH = 2.54
