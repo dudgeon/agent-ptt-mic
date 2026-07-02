@@ -93,6 +93,11 @@ def build_xiao():
 
 
 def build_slide():
+    """C&K OS102011MA1QN1 right-angle THT slide (SW6): body on the front
+    face at the right board edge, actuator knob extending past the edge
+    through the shell's side-wall slot -- same side-exit concept as the
+    original PCM12 design (a perpendicular-mount toggle was tried and
+    rejected 2026-07-02, see design_params.py)."""
     x_body = P.PCB_W / 2 - P.SLIDE_BODY_W / 2
     body = box_at(P.SLIDE_BODY_W, P.SLIDE_BODY_L, P.SLIDE_BODY_H,
                   x_body, P.SLIDE_POS_Y, 0)

@@ -113,7 +113,9 @@ def _front_body():
         cq.Workplane("XY", origin=(lx, ycad(lyb), Z_FRONT_IN - 0.1))
         .circle(P.LED_WINDOW / 2).extrude(P.WALL + 0.2))
 
-    # right-wall slot for the latch slide knob
+    # right-wall slot for the latch slide knob (SW6, C&K OS102011MA1QN1 --
+    # same side-exit concept as the original PCM12 design; a front-face
+    # toggle was tried and rejected 2026-07-02, see design_params.py)
     knob_zc = P.SLIDE_BODY_H / 2
     slot = (cq.Workplane("YZ", origin=(CAV_W / 2 - 0.1, ycad(P.SLIDE_POS_Y),
                                        knob_zc))

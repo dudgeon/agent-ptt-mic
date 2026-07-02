@@ -54,7 +54,7 @@ without checking with Geoff first.
 | U1 | 1 | Seeed Studio XIAO RP2040 — **pre-soldered** | Header pins, mounted on carrier BACK via its own presoldered pins pushed through + soldered | [LOCKED] board choice; module carries USB-C, RP2040, flash, NeoPixel | [Seeed, pre-soldered](https://www.seeedstudio.com/Seeed-Studio-XIAO-RP2040-Pre-Soldered-p-6333.html) — **$4.90/unit confirmed live 2026-07-02** (US direct-from-Seeed, in stock; $4.40 at 10+), well below the earlier $9–24 search-snippet estimate |
 | SW1–SW5 | 5 | Kailh Choc V1 (PG1350) — Brown/tactile suggested | Through-hole switch pins + locating posts | Low-profile mechanical keyswitch: real switch feel in a handheld-thickness shell (11 mm stack vs ~18.5 mm for full MX) | Kailh via distributors (Chosfox, splitkb, MoErgo, AliExpress) — [splitkb.com](https://splitkb.com/collections/switches) confirmed live 2026-07-02: €0.99/switch single, €0.82 excl. tax in packs (≈$0.90–1.05 USD) |
 | — | 5 | MBK Choc-profile 1u keycaps, blank | Friction-fit on Choc stem | Blank per the minimalist/UV-print decision | Same suppliers as switches — [splitkb.com](https://splitkb.com/collections/keycaps) confirmed live 2026-07-02: €0.99/cap single, €0.82 excl. tax in packs (≈$0.90–1.05 USD), matching the earlier estimate closely |
-| SW6 | 1 | ~~C&K PCM12SMTR~~ — **under review, see survey below** | Right-angle SMT, actuator past PCB edge | Latch control on the shell *side wall* per §2.3; distinct-by-feel from the keys | Deep component survey completed 2026-07-02 with live distributor data — see callout below. **C&K OS102011MA1QN1 is the [PROPOSED] leading replacement**, pending Geoff's sign-off and a body-height clearance check |
+| SW6 | 1 | **C&K OS102011MA1QN1** (SPDT slide, on-on) — **[LOCKED] by Geoff 2026-07-02** | **Right-angle THT**, actuator past PCB edge (same side-exit concept as the original PCM12) | Latch control on the shell *side wall* per §2.3; distinct-by-feel from the keys. THT pins wave/hand-solderable; **in JLCPCB's parts catalog via LCSC (`C226259`), so it can be vendor-assembled in standard PCBA — no consignment** | [DigiKey CKN9559-ND](https://www.digikey.com/en/products/detail/c-k/OS102011MA1QN1/1981430) $0.71 · Mouser $0.70 · [LCSC C226259](https://www.lcsc.com/product-detail/C226259.html) $0.66 — all live-confirmed in stock 2026-07-02. Dimensions from the [OS series datasheet](https://www.lcsc.com/datasheet/C226259.pdf) p. I-42: body 8.6×3.9×4.4mm, 3 PC pins ø0.8 @ 2.1mm + 2 support legs ø1.5 @ 8.2mm span. Decision trail: survey (below) → Geoff first picked the CIT ANT11SF1CQE toggle → its perpendicular mounting needed a raised front-face turret, rejected on render preview as unworkable → reverted same day to this side-exit slide, the survey's original leading candidate |
 | MK1 | 1 | I2S MEMS mic **breakout module** (e.g. Adafruit SPH0645, PID 3421) | 6-pin THT header, front side, own onboard acoustic port | Matches the original breadboard-track part (SPEC §7 OQ2) instead of a bare reflow-only chip — hand-solderable header pins | [Adafruit #3421](https://www.adafruit.com/product/3421) — **$6.95/unit confirmed live 2026-07-02** (direct from Adafruit, in stock; $6.26 at 10+), matching the earlier estimate. Official dimensions **16.7 × 12.7 × 1.8mm** (resolves the `MIC_BRK_L`/`MIC_BRK_W` VERIFY tags in `hardware/design_params.py`) |
 | D1 | 1 | WS2812B (5050) or SK6812 addressable RGB LED | SMD, front side, top edge | v2.1: full RGB "for future status options," reintroduced as addressable because the pin budget only has 1 spare GPIO left (see revision note above) — driven with solid colors only, no animation requirement | Commodity |
 | C1 | 1 | 100 nF THT ceramic disc | THT, 5mm lead spacing | Mic VDD decoupling | Commodity |
@@ -62,16 +62,19 @@ without checking with Geoff first.
 | C3 | 1 | 10 µF THT electrolytic/ceramic | THT, 5mm lead spacing | Bulk for LED + mic rail | Commodity |
 | R1 | 1 | 300–500 Ω 1/4W axial resistor | THT, formed leads | LED data-line series resistor (signal integrity, not current-limiting — WS2812 draws its own current) | Commodity |
 
-> ## ⚠ SW6 (latch switch) — component survey complete (2026-07-02, live browser pass), pick still [PROPOSED]
+> ## SW6 (latch switch) — RESOLVED 2026-07-02: C&K OS102011MA1QN1 [LOCKED]
 >
-> **Survey done with real browser access** (DigiKey, Mouser, LCSC live
-> parametric search + product pages, not search snippets). C&K PCM12SMTR
-> is still real and still orderable at some distributors, but this pass
-> confirms the obsolescence risk *and* surveys genuine alternatives
-> outside the SMT-slide-switch box, per the filter criteria below.
-> **None of the candidates below are ordered or locked — this is a
-> recommendation for Geoff to confirm, matching every other [PROPOSED]
-> item in this file.**
+> **Decision trail, same day:** survey completed with real browser access
+> (DigiKey, Mouser, LCSC live parametric search + product pages) → Geoff
+> initially picked the CIT ANT11SF1CQE toggle from the table below → the
+> ANT datasheet showed it mounts perpendicular to the PCB, forcing a
+> raised front-face turret in the enclosure → Geoff rejected that on
+> render preview ("completely unworkable") and directed a revert to a
+> side-mount part that's available and vendor-assemblable → **C&K
+> OS102011MA1QN1**, the survey's original leading candidate, is the final
+> pick. `design_params.py` `SLIDE_*`, `generate_pcb.py` `slide_os102()`,
+> the enclosure side slot, and the mockup all now carry its real
+> datasheet dimensions. The survey table below is kept for the record.
 >
 > **The actual requirement** (unchanged from the prior write-up, still the
 > filter to design against): `docs/SPEC.md` §2 Message 1 only asked for "a
@@ -95,27 +98,22 @@ without checking with Geoff first.
 > | Knitter-Switch SMR 1-30 | Rotary, 2-position, screwdriver-slot actuator | PCB mount | $2.07 | 1,886 | 1 | Compact and cheap, but the screwdriver-slot actuator needs a tool to change state — fails the "visibly/tactilely stateful by hand" spirit of §3 Locked Decision 6 unless paired with a knob-actuator rotary (those ran $10–18 in this survey, e.g. C&K A11405RNZQ). Not recommended given the cost/complexity vs. the slide/toggle options above. |
 > | Momentary + firmware latch (reuse a Kailh Choc key, no new part) | — | — | $0 incremental (already in BOM) | — | — | Cheapest and simplest option architecturally, but state lives only in firmware — no physical position to check by eye or touch, weakening the §3 Locked Decision 6 guarantee. Listed for completeness per the filter criteria; **not recommended** unless Geoff explicitly prefers it over a mechanical switch. |
 >
-> **Recommendation (flagged [PROPOSED], not decided):** **C&K
-> OS102011MA1QN1** as primary pick — it's the closest geometric match to
-> the current side-wall-slot mounting concept (right-angle THT, actuator
-> past the board edge, same mental model as PCM12 just through-hole
-> instead of SMT), confirmed active and in stock at 3 independent
-> distributors, and cheap ($0.66–0.71). The one open item before treating
-> this as final: **confirm its through-PCB body height against
-> `CHOC_H_ABOVE_PCB`/`FRONT_GAP`** — the LCSC facet data suggests it may
-> be taller than the SMT part it replaces. E-Switch EG1218 is the
-> fallback if that clearance check fails, at the cost of moving SW6 to a
-> top-face slot. CIT ANT11SF1CQE (toggle) is worth a look if Geoff wants
-> the most unambiguous physical-state affordance and is fine with a
-> bigger enclosure change and a currently-single-sourced part.
+> **Outcome:** OS102011MA1QN1 confirmed as the pick (see decision trail
+> at the top of this callout). The body-height concern raised by the LCSC
+> facet data resolved cleanly against the real datasheet: the right-angle
+> "MA1" version's body stands only **4.4mm** above the PCB — under the
+> front wall's 5.5mm clearance, no enclosure change needed (the 8.4mm
+> LCSC figure was for the vertical-mount variant). E-Switch EG1218 and
+> the CIT toggle rows above are kept for the record; the toggle was
+> actually tried and rejected (render preview showed the front-face
+> turret its perpendicular mounting requires — unworkable).
 >
-> Tracked as [GitHub issue #16](https://github.com/dudgeon/agent-ptt-mic/issues/16).
-> Footprint/pin spacing in `hardware/pcb/generate_pcb.py` (`slide_pcm12()`)
-> and the `SLIDE_*` constants in `hardware/design_params.py` are
-> **unchanged in this pass** — deliberately left alone until Geoff signs
-> off on one of the above, per the issue's explicit scope boundary
-> ("actually picking a replacement... is the next step after the
-> survey, not this one").
+> Tracked as [GitHub issue #16](https://github.com/dudgeon/agent-ptt-mic/issues/16)
+> (now resolvable). `hardware/pcb/generate_pcb.py` `slide_os102()`, the
+> `SLIDE_*` constants in `hardware/design_params.py`, the enclosure side
+> slot, and the mockup all carry the OS102011MA1QN1 datasheet dimensions
+> as of 2026-07-02. Remaining VERIFY: exact pin-row offset within the
+> body and knob cross-section against a physical part before fab.
 
 Optional (decided against for v2, easy to add later): Kailh Choc hot-swap
 sockets (CPG135001S30) — v2 solders switches directly for simplicity and

@@ -195,20 +195,29 @@ def choc_v1(ref, cx, cy, netname):
               extra_items=body + cap, smd=False)
 
 
-def slide_pcm12(ref, cx, cy):
-    """C&K PCM12SMTR, right-angle SMT; actuator toward +X past board edge.
-
-    Terminals face -X (into the board). VERIFY land pattern vs datasheet.
+def slide_os102(ref, cx, cy):
+    """C&K OS102011MA1QN1, right-angle THT; actuator toward +X past board
+    edge. Replaces the obsolete SMT PCM12SMTR (issue #16). Pin pattern from
+    the OS series datasheet (page I-42): 3 PC pins ø0.8mm at 2.1mm pitch
+    along the board edge, plus 2 support legs ø1.5mm spanning 8.2mm.
+    Exact pin-row X offset within the body read off the drawing at print
+    precision -- VERIFY land pattern vs the physical part before fab.
     """
     pads = [
-        smd_pad(1, -2.4, -2.5, 1.6, 1.0, "LATCH"),
-        smd_pad(2, -2.4, 0.0, 1.6, 1.0, "GND"),
-        smd_pad(3, -2.4, 2.5, 1.6, 1.0, None),
-        smd_pad("MP1", 1.2, -3.6, 1.8, 1.4, None),
-        smd_pad("MP2", 1.2, 3.6, 1.8, 1.4, None),
+        tht_pad(1, -1.0, -P.SLIDE_PIN_PITCH,
+                P.SLIDE_PIN_HOLE + 0.8, P.SLIDE_PIN_HOLE, "LATCH"),
+        tht_pad(2, -1.0, 0.0,
+                P.SLIDE_PIN_HOLE + 0.8, P.SLIDE_PIN_HOLE, "GND"),
+        tht_pad(3, -1.0, P.SLIDE_PIN_PITCH,
+                P.SLIDE_PIN_HOLE + 0.8, P.SLIDE_PIN_HOLE, None),
+        tht_pad("MP1", 0.5, -P.SLIDE_MNT_SPAN / 2,
+                P.SLIDE_MNT_HOLE + 0.9, P.SLIDE_MNT_HOLE, None),
+        tht_pad("MP2", 0.5, P.SLIDE_MNT_SPAN / 2,
+                P.SLIDE_MNT_HOLE + 0.9, P.SLIDE_MNT_HOLE, None),
     ]
     body = outline_lines(P.SLIDE_BODY_W, P.SLIDE_BODY_L)
-    return fp("CK_PCM12SMTR", ref, pos(cx, cy), pads, extra_items=body)
+    return fp("CK_OS102011MA1QN1", ref, pos(cx, cy), pads,
+              extra_items=body, smd=False)
 
 
 def mic_breakout(ref, cx, cy):
@@ -342,7 +351,7 @@ def build():
     for name, (x, y) in P.KEY_POS.items():
         fps.append(choc_v1(sw_ref[name], x, y, key_nets[name]))
 
-    fps.append(slide_pcm12("SW6", P.PCB_W / 2 - P.SLIDE_BODY_W / 2,
+    fps.append(slide_os102("SW6", P.PCB_W / 2 - P.SLIDE_BODY_W / 2,
                            P.SLIDE_POS_Y))
     fps.append(mic_breakout("MK1", *P.MIC_POS))
     fps.append(led_addressable("D1", *P.LED_POS))

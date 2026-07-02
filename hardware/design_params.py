@@ -98,19 +98,35 @@ MIC_BRK_PIN_PITCH = 2.54
 MIC_BRK_STANDOFF = 3.0    # header standoff above carrier front face
 
 # --------------------------------------------------------------------------
-# C&K PCM12SMTR right-angle SMT slide switch (always-stream latch)
-# Actuator extends past the PCB edge -> pokes through the enclosure side
-# wall, per PHYSICAL_DESIGN_SPEC §2.3 (latch on the side of the shell).
-# Source: C&K PCM12 series datasheet. VERIFY exact body dims before fab.
-# Kept as SMD: it's ordinary hand-solder-friendly gull-wing pads, not a
-# reflow-only part like the mic chip was -- no reason to swap it out.
+# C&K OS102011MA1QN1 right-angle THT slide switch (always-stream latch,
+# SW6). Replaces the obsolete PCM12SMTR after the issue #16 survey. Same
+# mounting concept as PCM12: right-angle, actuator extends past the PCB
+# edge -> pokes through the enclosure side wall per PHYSICAL_DESIGN_SPEC
+# §2.3. (A CIT ANT11SF1CQE toggle was tried 2026-07-02 and rejected by
+# Geoff after a render preview -- its perpendicular-to-PCB mounting needed
+# a raised front-face turret that looked unworkable; reverted to the
+# side-exit slide concept the same day.)
+#
+# Why this part: SPDT on-on, mechanically bistable; ACTIVE production,
+# live-confirmed in stock at DigiKey (91k+), Mouser (16k+), and LCSC
+# (C226259) 2026-07-02 -- and the LCSC listing means JLCPCB can source and
+# solder it in standard PCBA (THT wave/hand solder), no consignment needed.
+#
+# Source: C&K OS series datasheet (8 aug 17 revision), OS102011MA1QN1
+# drawing, page I-42 -- fetched live 2026-07-02 via LCSC's datasheet CDN.
+# Values converted from the drawing's inch (mm) callouts. VERIFY against
+# the physical part before fab, per this file's standing convention.
 # --------------------------------------------------------------------------
-SLIDE_BODY_L = 8.7        # along PCB edge
-SLIDE_BODY_W = 3.6        # into the board
-SLIDE_BODY_H = 3.4        # above PCB
-SLIDE_KNOB = 1.5          # knob square section
-SLIDE_KNOB_EXT = 2.4      # knob protrusion past PCB edge at mid-throw
-SLIDE_TRAVEL = 2.0        # end-to-end actuator travel
+SLIDE_BODY_L = 8.6        # along PCB edge (datasheet .339" body length)
+SLIDE_BODY_W = 3.9        # into the board (datasheet .154")
+SLIDE_BODY_H = 4.4        # above PCB (datasheet .173")
+SLIDE_KNOB = 2.0          # knob cross-section (approx from drawing -- VERIFY)
+SLIDE_KNOB_EXT = 4.0      # knob protrusion past body/PCB edge (.157")
+SLIDE_TRAVEL = 2.0        # end-to-end actuator travel (.079")
+SLIDE_PIN_HOLE = 0.8      # 3x PC pin drill (datasheet 3X ø.031")
+SLIDE_PIN_PITCH = 2.1     # pin-to-pin (.083")
+SLIDE_MNT_HOLE = 1.5      # 2x support-leg drill (datasheet 2X ø.059")
+SLIDE_MNT_SPAN = 8.2      # support-leg span (.323")
 
 # --------------------------------------------------------------------------
 # Addressable RGB status LED (WS2812B/SK6812-style, 5050 package), front
@@ -161,6 +177,8 @@ KEY_POS = {
 MIC_POS = (0.0, 10.0)         # top centre, front side (breakout module)
 LED_POS = (14.0, 8.0)         # top right, front side
 SLIDE_POS_Y = 16.0            # right board edge, actuator past edge
+                              # (OS102011MA1QN1, same side-exit concept
+                              # as the original PCM12 placement)
 XIAO_POS_Y = 92.5             # module centre, BACK side; USB-C flush w/
                               # bottom edge, facing away into the back shell
 
