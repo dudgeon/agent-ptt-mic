@@ -1,6 +1,8 @@
 # Physical Design Spec — PCB Breakout, Enclosure, and 3D Mockup
 
-**Status:** Requirements captured, design work not yet started.
+**Status:** Requirements captured 2026-07-01; first full design pass executed
+2026-07-02 — see §7 for what was built and where the implementation deviated
+from the proposals below.
 **Scope note:** This track was explicitly requested by Geoff ahead of the
 `docs/SPEC.md` §12 Milestone 7 gate ("no PCB work until the breadboard design
 is functionally locked"). Per that document's own tie-breaker rule — a direct
@@ -178,9 +180,51 @@ Section 2 are proposals, not final.
 
 ## 6. What this document deliberately does not do
 
-- Does not pick final manufacturer/part numbers — Section 2 lists candidate
-  families, not a locked BOM.
-- Does not produce KiCad schematic/PCB files, CAD files, or STL/STEP output.
 - Does not change the breadboard-track BOM in `docs/SPEC.md` §7 or the M1–M7
   milestone plan — those continue independently on the original hardware
   (Adafruit SPH0645 breakout, no custom PCB) until the M7 gate.
+
+(As of 2026-07-02, part numbers, PCB files, CAD files and STL/STEP output
+DO exist — see §7. The sections above are kept as the requirements record.)
+
+---
+
+## 7. Implemented design — 2026-07-02 session
+
+The design pass described in `docs/HANDOFF.md` was executed. Artifacts:
+
+- **Locked part picks + carrier netlist:** `hardware/BOM.md`.
+- **Shared dimensional source of truth:** `hardware/design_params.py` — the
+  PCB generator, enclosure CAD, and mockup all import from it.
+- **Carrier PCB (KiCad):** `hardware/pcb/` — placed + netlisted, not yet
+  routed (deliberate; see that README's rationale and pre-fab VERIFY list).
+- **Enclosure (CadQuery → STL/STEP):** `hardware/enclosure/` —
+  49.2 × 109.2 × 14.3 mm handheld, front shell + inset back lid.
+- **3D mockup + renders:** `hardware/mockup/` — full colored STEP assembly
+  and PNG views, every component at its datasheet envelope.
+
+### Deviations from §2's proposals [PROPOSED — flag to Geoff]
+
+1. **Keyswitch family: Kailh Choc V1** (per §2.1's default). Full-height MX
+   was not pursued — it would push shell thickness past 20 mm.
+2. **Keystroke cluster is a 2×2 grid, not a diamond** (§2.3 proposed a
+   diamond). At Choc spacing a diamond spans ~54 mm — wider than a
+   comfortable one-hand shell; the 2×2 grid keeps the device at 49 mm wide.
+3. **PTT is a thumb key at bottom-centre, not an index-finger trigger on
+   the top edge** (§2.3 proposed a trigger). An edge-mounted keyswitch
+   needs a right-angle daughterboard — real complexity for v1. The PTT key
+   sits where the thumb naturally rests when the lower third of the shell
+   (the blank grip zone, XIAO inside) is in the palm. Revisit as a v2
+   refinement if hold-to-talk by thumb proves fatiguing.
+4. **Always-stream latch: C&K PCM12SMTR** right-angle slide at the right
+   board edge, knob through the side wall — implements §2.2/§2.3 as
+   proposed. (Left-handers: it's reachable but less convenient; symmetric
+   it is not. Flag with the layout confirmation.)
+5. **Status LED: WS2812B on the carrier at the top-front, driven from
+   spare D10/GPIO3.** The XIAO's own NeoPixel ends up inside the closed
+   shell at the bottom, so a carrier LED behind a ⌀2.5 window replaces it.
+   One spare GPIO (D9) remains.
+6. **The 2×2 cluster shares one front-face opening** (macropad-style
+   bezel): at standard Choc pitch, per-key openings would leave <1 mm FDM
+   walls between caps, which would not survive printing or use.
+

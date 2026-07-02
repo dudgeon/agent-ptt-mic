@@ -1,5 +1,12 @@
 # Handoff — PCB / Industrial Design Track
 
+> **Executed 2026-07-02.** All five scoped deliverables below were built —
+> see `docs/PHYSICAL_DESIGN_SPEC.md` §7 for the artifact map and the
+> deviations that need Geoff's eyes. Remaining work is tracked in the
+> repo's GitHub issues (routing + pre-fab verification, layout
+> confirmation, first fit-check print). This document is kept as the
+> record of what the executing session was asked to do.
+
 **Written:** 2026-07-01, end of the requirements-gathering session.
 **Why this doc exists:** Geoff asked to hand this specific track (component
 selection, physical layout, PCB breakout design, enclosure design, and a

@@ -3,23 +3,26 @@
 Live tracker — update this as work happens. `SPEC.md` is the frozen requirements
 record; this file is the mutable "where are we right now."
 
-**Last updated:** 2026-07-01
+**Last updated:** 2026-07-02
 
 ## Current phase
 
-Two concurrent tracks as of 2026-07-01:
+Two concurrent tracks:
 
 1. **Breadboard firmware track (M1–M7, SPEC.md §12).** Pre-hardware-arrival —
    the Seeed Studio XIAO RP2040 has been ordered (see SPEC.md §3, §4) but has
    not arrived. No firmware milestone can be gated/verified on real hardware
    yet (flashing, enumeration checks, audio recording all require the board
    in hand).
-2. **Accelerated PCB / industrial-design track (SPEC.md §16, new).** Geoff
-   explicitly asked to start component selection, physical layout, custom PCB
-   breakout design, enclosure design, and a 3D mockup now, ahead of the M7
-   gate. Requirements and the physical/aesthetic decisions gathered so far
-   are in `docs/PHYSICAL_DESIGN_SPEC.md`. Actual component picks, PCB layout,
-   and 3D files are the next session's deliverables — see `docs/HANDOFF.md`.
+2. **PCB / industrial-design track (SPEC.md §16).** Design spike Geoff
+   requested while awaiting delivery; runs in parallel with (not instead of)
+   the breadboard plan. **First full design pass complete (2026-07-02):**
+   locked part picks + netlist (`hardware/BOM.md`), placed/netlisted KiCad
+   carrier board (`hardware/pcb/`), FDM enclosure STL/STEP
+   (`hardware/enclosure/`), and a component-accurate 3D mockup with renders
+   (`hardware/mockup/`). See `docs/PHYSICAL_DESIGN_SPEC.md` §7 for the
+   deviations awaiting Geoff's confirmation. Remaining: layout sign-off,
+   PCB routing + pre-fab footprint verification, first fit-check print.
 
 ## Milestone progress (SPEC.md §12)
 
@@ -76,6 +79,11 @@ Milestone progress is also tracked as a checklist in
    but lead time may be worth ordering now.
 
 ### PCB / industrial-design track
-See `docs/HANDOFF.md` for the next session's scoped deliverables: finalize
-component part numbers, produce a KiCad carrier-PCB project, and produce a
-dimensionally-accurate 3D mockup (STL/STEP) of the handheld enclosure.
+1. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`) and
+   confirms/adjusts the layout deviations in `docs/PHYSICAL_DESIGN_SPEC.md`
+   §7 (thumb PTT, 2×2 grid, right-side latch).
+2. Route the carrier board in an interactive KiCad session and work the
+   pre-fab VERIFY list in `hardware/pcb/README.md`.
+3. FDM fit-check print of the two shell parts (checklist at the end of
+   `hardware/enclosure/README.md`). Ordering parts/fab needs Geoff's
+   go-ahead first.
