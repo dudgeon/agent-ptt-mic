@@ -32,7 +32,7 @@ import design_params as P  # noqa: E402
 from kiutils.board import Board  # noqa: E402
 from kiutils.footprint import Footprint, Pad, DrillDefinition, Attributes  # noqa: E402
 from kiutils.items.common import Net, Position, Effects, Font  # noqa: E402
-from kiutils.items.gritems import GrLine, GrArc  # noqa: E402
+from kiutils.items.gritems import GrLine, GrArc, GrText  # noqa: E402
 from kiutils.items.fpitems import FpText, FpLine, FpCircle  # noqa: E402
 from kiutils.items.zones import Zone, FillSettings, Hatch, ZonePolygon  # noqa: E402
 from kiutils.items.brditems import LayerToken  # noqa: E402
@@ -76,7 +76,7 @@ def smd_pad(number, x, y, w, h, netname=None, layer="F.Cu"):
     )
 
 
-def tht_pad(number, x, y, pad_d, drill_d, netname=None):
+def tht_pad(number, x, y, pad_d, drill_d, netname=None, solid_zone=False):
     return Pad(
         number=str(number), type="thru_hole", shape="circle",
         position=Position(X=round(x, 3), Y=round(y, 3)),
@@ -84,6 +84,7 @@ def tht_pad(number, x, y, pad_d, drill_d, netname=None):
         drill=DrillDefinition(diameter=drill_d),
         layers=["*.Cu", "*.Mask"],
         net=net(netname) if netname else None,
+        zoneConnect=2 if solid_zone else None,
     )
 
 
@@ -180,14 +181,21 @@ def xiao_rp2040(ref, cx, cy):
                                                    thickness=0.11)))])
 
 
-def choc_v1(ref, cx, cy, netname):
-    """Kailh Choc V1 (PG1350). Contacts: pin1 -> GPIO net, pin2 -> GND."""
+def choc_v1(ref, cx, cy, netname, solid_gnd=False):
+    """Kailh Choc V1 (PG1350). Contacts: pin1 -> GPIO net, pin2 -> GND.
+
+    solid_gnd: give the GND pad a solid zone connection instead of thermal
+    spokes -- used for the PTT switch, whose stem/post holes crowd the
+    F.Cu zone so much that the thermal-relief spokes can't meet the
+    2-spoke DRC minimum (found by the first real DRC run 2026-07-02).
+    THT pad on a hand/wave-soldered board, so solid connect is fine."""
     pads = [
         npth(0, 0, P.CHOC_STEM_HOLE),
         npth(-P.CHOC_POST_X, 0, P.CHOC_POST_HOLE),
         npth(P.CHOC_POST_X, 0, P.CHOC_POST_HOLE),
         tht_pad(1, P.CHOC_PIN1[0], P.CHOC_PIN1[1], 2.2, P.CHOC_PIN_HOLE, netname),
-        tht_pad(2, P.CHOC_PIN2[0], P.CHOC_PIN2[1], 2.2, P.CHOC_PIN_HOLE, "GND"),
+        tht_pad(2, P.CHOC_PIN2[0], P.CHOC_PIN2[1], 2.2, P.CHOC_PIN_HOLE, "GND",
+                solid_zone=solid_gnd),
     ]
     body = outline_lines(P.CHOC_BODY, P.CHOC_BODY)
     cap = outline_lines(P.CAP_W, P.CAP_D, layer="F.Fab")
@@ -210,9 +218,13 @@ def slide_os102(ref, cx, cy):
                 P.SLIDE_PIN_HOLE + 0.8, P.SLIDE_PIN_HOLE, "GND"),
         tht_pad(3, -1.0, P.SLIDE_PIN_PITCH,
                 P.SLIDE_PIN_HOLE + 0.8, P.SLIDE_PIN_HOLE, None),
-        tht_pad("MP1", 0.5, -P.SLIDE_MNT_SPAN / 2,
+        # support legs at the footprint centreline (x=0): keeps their pad
+        # annulars >= 0.5mm from the board edge (a +0.5 offset put them at
+        # 0.25mm -- first DRC run flagged it); exact offset VERIFY against
+        # the physical part
+        tht_pad("MP1", 0.0, -P.SLIDE_MNT_SPAN / 2,
                 P.SLIDE_MNT_HOLE + 0.9, P.SLIDE_MNT_HOLE, None),
-        tht_pad("MP2", 0.5, P.SLIDE_MNT_SPAN / 2,
+        tht_pad("MP2", 0.0, P.SLIDE_MNT_SPAN / 2,
                 P.SLIDE_MNT_HOLE + 0.9, P.SLIDE_MNT_HOLE, None),
     ]
     body = outline_lines(P.SLIDE_BODY_W, P.SLIDE_BODY_L)
@@ -349,7 +361,8 @@ def build():
     sw_ref = {"approve": "SW1", "remember": "SW2", "reject": "SW3",
               "mode": "SW4", "ptt": "SW5"}
     for name, (x, y) in P.KEY_POS.items():
-        fps.append(choc_v1(sw_ref[name], x, y, key_nets[name]))
+        fps.append(choc_v1(sw_ref[name], x, y, key_nets[name],
+                           solid_gnd=(name == "ptt")))
 
     fps.append(slide_os102("SW6", P.PCB_W / 2 - P.SLIDE_BODY_W / 2,
                            P.SLIDE_POS_Y))
@@ -363,7 +376,10 @@ def build():
     # near the XIAO's 3V3 pins.
     fps.append(passive_tht("C1", -16.0, 20.0, "3V3", "GND", spacing=5.0))
     fps.append(passive_tht("C2", 9.0, 20.0, "3V3", "GND", spacing=5.0))
-    fps.append(passive_tht("R1", 14.0, 13.5, "LED_DATA", "LED_DIN",
+    # R1 moved left 2026-07-02: at x=14 its +X pad landed on SW6's pin 1
+    # (the OS102011 THT pin row sits further into the board than the old
+    # PCM12 SMT pads did) -- caught by the first real DRC run.
+    fps.append(passive_tht("R1", 8.0, 13.5, "LED_DATA", "LED_DIN",
                            spacing=P.RES_THT_LEAD_SPACING))
     fps.append(passive_tht("C3", -13.0, 84.0, "3V3", "GND",
                            spacing=5.0))  # clear of U1
@@ -372,7 +388,21 @@ def build():
         fps.append(mount_hole(f"H{i}", x, y))
 
     board.footprints = fps
-    board.graphicItems = edge_cuts()
+
+    # Silkscreen branding (Geoff's request, 2026-07-02): project name +
+    # attribution, front side, in the clear band between the PTT key and
+    # the XIAO pin field. Line 2 nudged +X to clear C3's reference text.
+    def silk_text(text, x, y, size=1.2):
+        return GrText(
+            text=text, position=pos(x, y), layer="F.SilkS",
+            effects=Effects(font=Font(height=size, width=size,
+                                      thickness=0.15)),
+        )
+
+    board.graphicItems = edge_cuts() + [
+        silk_text("agent-ptt-mic-v0", 0.0, 78.6, size=1.2),
+        silk_text("Geoff Dudgeon & Claude", 2.0, 81.2, size=1.0),
+    ]
     board.zones = [gnd_zone("F.Cu"), gnd_zone("B.Cu")]
     return board
 

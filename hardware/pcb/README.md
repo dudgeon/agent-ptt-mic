@@ -3,14 +3,16 @@
 2-layer carrier board (44 × 104 mm) for the handheld device: hosts the XIAO
 RP2040 module (**pre-soldered/header SKU**, mounted on the BACK via its own
 header pins, USB-C facing away into the back shell), 5× Kailh Choc V1
-keyswitches, the PCM12SMTR side-actuated latch slide, an I2S mic
+keyswitches, the **C&K OS102011MA1QN1** side-actuated latch slide (THT,
+right-angle — replaced the obsolete PCM12SMTR, issue #16), an I2S mic
 **breakout module** (front side, THT header), an **addressable RGB LED**
 (WS2812B/SK6812-style — the one deliberately-reintroduced SMD part, see
 below) + THT passives — every other active part is through-hole/header-
 mount, hand-solderable with a plain iron (2026-07-02 revision; see
 `docs/PHYSICAL_DESIGN_SPEC.md` §7 for why). Net/pin assignments follow
 `docs/SPEC.md` §8 plus the status LED on spare D10/GPIO3 — the full
-netlist table is in `../BOM.md`.
+netlist table is in `../BOM.md`. Front silkscreen carries
+`agent-ptt-mic-v0 / Geoff Dudgeon & Claude` (Geoff's request, 2026-07-02).
 
 **Why the LED is SMD again:** Geoff asked for a true RGB status LED. A
 discrete (non-addressable) RGB LED needs 3 independent GPIOs; the locked
@@ -20,23 +22,44 @@ pads), just not through-hole.
 
 ## Files
 
-- `generate_pcb.py` — the source of truth. Regenerates the board file from
-  `../design_params.py`. Run `python3 hardware/pcb/generate_pcb.py` from the
-  repo root after changing any dimension or position.
-- `companion_carrier.kicad_pcb` — generated output (committed so it can be
-  reviewed/opened without running anything).
+- `generate_pcb.py` — the source of truth for placement + netlist.
+  Regenerates the board file from `../design_params.py`. Run
+  `python3 hardware/pcb/generate_pcb.py` from the repo root after changing
+  any dimension or position — **then re-run the routing pipeline below**
+  (regenerating discards routing).
+- `route_board.py` — step 2: headless routing via freerouting + zone fill.
+  Needs KiCad's bundled python (for `pcbnew`) and a freerouting jar; see
+  its docstring for exact invocation.
+- `companion_carrier.kicad_pcb` — generated, **routed** output (committed).
 - `companion_carrier.kicad_pro` — project file.
+- `fab/companion_carrier_v0_gerbers.zip` — Gerbers + Excellon drill files,
+  ready for JLCPCB/PCBWay upload.
+- `fab/companion_carrier-cpl.csv` — component placement (pos) file for
+  PCBA quoting.
+- `fab/board_top.png`, `fab/board_bottom.png` — 3D renders of the routed
+  board (`kicad-cli pcb render`).
 
-## Status: placed + netlisted, NOT routed
+## Status: ROUTED, DRC-clean (2026-07-02)
 
-Deliberate scope cut, not an oversight: every footprint is placed and every
-pad carries its net (open the board in KiCad and the full ratsnest appears),
-but copper traces are not laid. Hand-computing trace geometry outside KiCad
-means no live DRC, which is how you ship shorts. Routing this board in an
-interactive KiCad session is ~30 minutes of work: all signals are slow
-single-ended GPIO, the only mild care point is keeping the three I2S lines
-short-ish and away from the LED data line. GND zones on both layers are
-declared (fill them with `B` in pcbnew).
+Routed headlessly with KiCad 10.0.4 + freerouting 2.2.4 (the repo's old
+"route interactively" rule was about having real DRC, not about hands on
+a mouse — this pipeline runs KiCad's own DRC):
+
+```
+python3 hardware/pcb/generate_pcb.py
+<kicad-python> hardware/pcb/route_board.py <freerouting.jar>
+kicad-cli pcb drc --severity-error --exit-code-violations ...
+kicad-cli pcb export gerbers/drill/pos ...
+```
+
+Final DRC: **0 error-severity violations, 0 unconnected items.** Remaining
+warnings are cosmetic (silk-over-copper clips at fab, generated footprints
+aren't from a library, two unmirrored back-silk ref texts). Two real
+issues were caught and fixed by the first DRC run: R1's +X pad landed on
+SW6's pin 1 (R1 moved to x=8), and SW6's support-leg pads sat 0.25mm from
+the board edge (moved to the footprint centreline). SW5's GND pad uses a
+solid zone connection instead of thermal spokes — the PTT switch's
+stem/post holes crowd the F.Cu zone below the 2-spoke DRC minimum.
 
 There is intentionally no `.kicad_sch`: the circuit is 17 components with a
 one-net-per-switch topology, fully specified by the netlist table in
@@ -44,10 +67,11 @@ one-net-per-switch topology, fully specified by the netlist table in
 that table is mechanical; hand-writing `.kicad_sch` s-expressions without
 KiCad available to validate them is where errors would creep in.
 
-## Before fabrication — VERIFY list
+## Before ordering fabrication — VERIFY list
 
-Footprint geometry here is derived from datasheets/community footprints at
-design time. Before generating gerbers:
+Gerbers exist and DRC is clean, but footprint geometry is still
+datasheet-derived. Before actually placing a fab order, check against
+physical parts:
 
 1. **XIAO header pin holes** — drill/pad size (currently 1.0mm drill,
    1.8mm pad) must fit the actual presoldered pin diameter; check against
@@ -59,12 +83,11 @@ design time. Before generating gerbers:
 3. **XIAO standoff/pin length** — `design_params.py XIAO_MODULE_STANDOFF`
    (6.0mm) is an estimate for how far the module hangs off the carrier;
    measure the real pin length before finalizing the enclosure thickness.
-4. **SW6 land pattern (`slide_pcm12()`)** — still the PCM12SMTR footprint.
-   A deep component survey (2026-07-02, issue #16, see `../BOM.md`) found
-   C&K OS102011MA1QN1 as the leading [PROPOSED] replacement — pending
-   Geoff's sign-off. Once a pick is confirmed, this footprint (and the
-   `SLIDE_*` constants in `design_params.py`) need updating — not done
-   yet, deliberately, per the issue's scope boundary.
+4. **SW6 land pattern (`slide_os102()`)** — C&K OS102011MA1QN1, pin/
+   support-hole pattern from the OS series datasheet (3× ø0.8 @ 2.1mm +
+   2× ø1.5 @ 8.2mm span). The pin row's exact X offset within the body
+   and the support-leg offset were read off the drawing at print
+   precision — measure a physical part before ordering.
 5. **Mic breakout footprint** — `MIC_BRK_L`/`MIC_BRK_W`/`MIC_BRK_H`
    **confirmed 2026-07-02** against Adafruit's own listing for #3421
    (16.7 × 12.7 × 1.8mm) — no longer an estimate, `design_params.py`
@@ -72,7 +95,9 @@ design time. Before generating gerbers:
    worth a quick physical check but low risk.
 6. **Choc contact-pin handedness** — pin 2 at (5.0, −3.8) assumes the common
    variant; check against a physical switch.
-7. Run DRC after routing, obviously.
+7. Re-run the route pipeline + DRC after any of the above change a
+   dimension (regeneration discards routing — `route_board.py` re-routes
+   in seconds).
 
 ## Coordinate convention
 

@@ -125,25 +125,36 @@ Milestone progress is also tracked as a checklist in
    but lead time may be worth ordering now.
 
 ### PCB / industrial-design track
-1. **Next up — needs Geoff's input:** confirm the SW6 replacement pick
-   (issue #16 — survey done 2026-07-02, C&K OS102011MA1QN1 [PROPOSED] as
-   leading candidate, see `hardware/BOM.md`) and review the corrected
-   assembly-cost figures (issue #15, see `hardware/ASSEMBLY_SOURCING.md`
-   and `hardware/assembly_options.html`).
-2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`) and
-   confirms/adjusts the layout deviations in `docs/PHYSICAL_DESIGN_SPEC.md`
-   §7 (thumb PTT, 2×2 grid, right-side latch) — independent of the SW6
-   pick, can happen in parallel.
-3. Once SW6 is confirmed: update `slide_pcm12()` in
-   `hardware/pcb/generate_pcb.py` and the `SLIDE_*` constants in
-   `hardware/design_params.py` to match the chosen part (including a
-   body-height clearance check against `CHOC_H_ABOVE_PCB` if
-   OS102011MA1QN1 is picked — its THT body may be taller than the SMT
-   PCM12SMTR it replaces), then route the carrier board in an interactive
-   KiCad session and work the rest of the pre-fab VERIFY list in
-   `hardware/pcb/README.md` (mic breakout dimensions already resolved
-   this pass; XIAO standoff and Choc pin handedness still need the
-   physical parts in hand).
+
+**2026-07-02 (later same day): SW6 resolved + board ROUTED, fab package
+exported.** Sequence: Geoff confirmed the CIT toggle from the survey →
+its perpendicular mounting forced a front-face turret → rejected on
+render preview → reverted to **C&K OS102011MA1QN1** (side-exit THT
+slide, the survey's original leading candidate; in LCSC catalog
+`C226259` so JLCPCB can place it in standard PCBA). Then the fab-ready
+pass: KiCad 10.0.4 installed headless (user-space, no sudo) +
+freerouting 2.2.4; board routed via the new reproducible
+`hardware/pcb/route_board.py` pipeline; first real DRC run caught two
+genuine placement bugs (R1 pad on SW6 pin, SW6 support legs 0.25mm from
+board edge) — both fixed in the generator; final DRC **0 errors, 0
+unconnected**. Front silkscreen carries `agent-ptt-mic-v0 / Geoff
+Dudgeon & Claude` per Geoff's request. Gerbers + drill + CPL exported to
+`hardware/pcb/fab/` (`companion_carrier_v0_gerbers.zip` is upload-ready
+for JLCPCB/PCBWay quoting).
+
+1. **Next: detailed vendor quotes with real files** — upload the Gerber
+   zip (+ BOM/CPL for assembly tiers) to JLCPCB/PCBWay instant quote for
+   firm numbers, replacing the dimension-only estimates in
+   `hardware/ASSEMBLY_SOURCING.md`. **No order without Geoff's
+   go-ahead** (standing rule).
+2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`)
+   and the routed-board renders (`hardware/pcb/fab/board_top.png`,
+   `board_bottom.png`); layout deviations in
+   `docs/PHYSICAL_DESIGN_SPEC.md` §7 still awaiting formal sign-off
+   (issue #12).
+3. Physical-part VERIFY checks before actually ordering (list in
+   `hardware/pcb/README.md`): XIAO pin diameter/standoff/pin order, SW6
+   pin-row offset, Choc pin handedness — all need parts in hand; any
+   dimension change re-runs generate → route → DRC in seconds.
 4. FDM fit-check print of the two shell parts (checklist at the end of
-   `hardware/enclosure/README.md`). Ordering parts/fab needs Geoff's
-   go-ahead first.
+   `hardware/enclosure/README.md`).
