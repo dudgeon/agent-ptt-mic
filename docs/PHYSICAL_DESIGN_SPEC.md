@@ -302,3 +302,17 @@ budget). See `hardware/BOM.md` for the updated part/netlist and
 `hardware/ASSEMBLY_SOURCING.md` for the re-run vendor/cost research this
 prompted.
 
+### Handoff, 2026-07-02: local research pass (pricing, sourcing, SW6)
+
+This session's cost/sourcing research (`hardware/ASSEMBLY_SOURCING.md`)
+was built entirely from search-snippet triangulation — no live browser
+access, every direct vendor/distributor page fetch returned HTTP 403. That
+research surfaced a real finding (the SW6 latch switch, C&K PCM12SMTR, is
+listed Obsolete) that exposed a bigger gap: no part in `hardware/BOM.md`
+was ever compared against real alternatives before being written down.
+The whole BOM is now explicitly marked provisional, and the project has
+been handed off to a local agent session with real browser access to do
+that deeper survey — see `docs/HANDOFF.md` for full scope, with the SW6
+component survey (issue #16) as the flagship task. Nothing in this
+section should be read as final until that pass reports back.
+

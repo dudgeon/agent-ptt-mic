@@ -17,19 +17,32 @@ Two concurrent tracks:
 2. **PCB / industrial-design track (SPEC.md §16).** Design spike Geoff
    requested while awaiting delivery; runs in parallel with (not instead of)
    the breadboard plan. **First full design pass complete (2026-07-02),
-   then revised same day (v2):** Geoff confirmed the XIAO he ordered is the
-   **pre-soldered/header SKU** (answers issue #9 ahead of physical arrival —
-   still worth a visual check on arrival that it's the RP2040 family member)
-   and asked to cut unnecessary SMD scope. Every active part is now
-   through-hole/header-mount — hand-solderable, no reflow/hot-air anywhere —
-   at the cost of a thicker enclosure (~22.6mm vs. ~14.3mm). See
-   `docs/PHYSICAL_DESIGN_SPEC.md` §7 for the full rationale and the
-   deviations awaiting Geoff's confirmation. The vendor-sourcing research
-   (`hardware/ASSEMBLY_SOURCING.md`) and cost artifact
-   (`hardware/assembly_options.html`) predate this revision and need
-   re-checking — tracked as [#15](https://github.com/dudgeon/agent-ptt-mic/issues/15).
-   Remaining: layout sign-off, PCB routing + pre-fab footprint
-   verification, first fit-check print.
+   then revised twice same day:** v2 (Geoff confirmed the XIAO he ordered is
+   the **pre-soldered/header SKU** — answers issue #9 ahead of physical
+   arrival, still worth a visual check on arrival that it's the RP2040
+   family member — and asked to cut unnecessary SMD scope; every active
+   part except the LED is now through-hole/header-mount, at the cost of a
+   thicker enclosure, ~22.6mm vs. ~14.3mm) and v2.1 (Geoff asked for a true
+   RGB status LED; the locked pin map only had 1 spare GPIO after the LED,
+   so it reverted to addressable — Geoff confirmed this resolution). See
+   `docs/PHYSICAL_DESIGN_SPEC.md` §7 for full rationale and remaining
+   deviations awaiting Geoff's confirmation.
+
+   **Two rounds of vendor-cost research done, both from search-snippet
+   triangulation only** — this session had no live browser access
+   (jlcpcb.com/pcbway.com/most distributor pages 403 every direct fetch).
+   That research surfaced a real find (the SW6 latch switch, C&K
+   PCM12SMTR, is listed Obsolete) that exposed a bigger gap: **no part in
+   `hardware/BOM.md` has been compared against real alternatives** — it's
+   explicitly marked provisional now, not final.
+
+   **⏸ Handed off 2026-07-02 to a local agent session with real browser
+   access** for a deeper research/refinement pass — see `docs/HANDOFF.md`
+   for full scope (flagship task: SW6 component survey, issue #16;
+   secondary: re-verify assembly costs with live quotes, issue #15).
+   Decisions in `hardware/BOM.md` stay open/provisional until that pass
+   reports back. Remaining after that: layout sign-off, PCB routing +
+   pre-fab footprint verification, first fit-check print.
 
 ## Milestone progress (SPEC.md §12)
 
@@ -86,11 +99,18 @@ Milestone progress is also tracked as a checklist in
    but lead time may be worth ordering now.
 
 ### PCB / industrial-design track
-1. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`) and
+1. **Next up (handed off, see `docs/HANDOFF.md`):** local-agent research
+   pass with real browser access — SW6 latch-switch component survey
+   (issue #16, flagship task) and live-quote verification of the
+   assembly-cost research (issue #15).
+2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`) and
    confirms/adjusts the layout deviations in `docs/PHYSICAL_DESIGN_SPEC.md`
-   §7 (thumb PTT, 2×2 grid, right-side latch).
-2. Route the carrier board in an interactive KiCad session and work the
-   pre-fab VERIFY list in `hardware/pcb/README.md`.
-3. FDM fit-check print of the two shell parts (checklist at the end of
+   §7 (thumb PTT, 2×2 grid, right-side latch) — independent of the
+   research pass, can happen in parallel.
+3. Route the carrier board in an interactive KiCad session and work the
+   pre-fab VERIFY list in `hardware/pcb/README.md` — after the SW6
+   footprint question (issue #16) resolves, since that switch's land
+   pattern is one of the things being routed.
+4. FDM fit-check print of the two shell parts (checklist at the end of
    `hardware/enclosure/README.md`). Ordering parts/fab needs Geoff's
    go-ahead first.
