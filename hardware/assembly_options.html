@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assembly options — Claude Code Companion Peripheral</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --ink-1: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --ring: rgba(11,11,11,0.10);
+    --bar: #2a78d6; --bar-light: #86b6ef; --bar-dark: #1c5cab;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --good-text: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --ink-1: #ffffff; --ink-2: #c3c2b7; --ink-3: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --ring: rgba(255,255,255,0.10);
+      --bar: #3987e5; --bar-light: #9ec5f4; --bar-dark: #184f95;
+      --good-text: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink-1);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px 14px 48px; }
+  h1 { font-size: 21px; line-height: 1.25; margin: 8px 0 2px; }
+  .sub { color: var(--ink-2); font-size: 13.5px; margin: 0 0 14px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--ring);
+    border-radius: 14px; padding: 14px 15px; margin: 12px 0;
+  }
+  .card h2 { font-size: 16.5px; margin: 0 0 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .card h3 { font-size: 13px; margin: 12px 0 4px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+  .cost { font-size: 15px; font-weight: 650; }
+  .tagline { color: var(--ink-2); font-size: 13.5px; margin: 2px 0 0; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; border-radius: 999px;
+    padding: 2.5px 10px; border: 1px solid var(--ring); color: var(--ink-1);
+    background: transparent; white-space: nowrap;
+  }
+  .badge .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  ul { margin: 4px 0 4px; padding-left: 19px; }
+  li { margin: 3px 0; }
+  .note { font-size: 13px; color: var(--ink-2); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+  @media (max-width: 430px) { .split { grid-template-columns: 1fr; } }
+
+  /* effort meter */
+  .meter { display: inline-flex; gap: 4px; vertical-align: -1px; margin-left: 6px; }
+  .meter i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--baseline); }
+  .meter i.f { background: var(--bar); border-color: var(--bar); }
+
+  /* cost range chart */
+  .chart { margin: 10px 0 2px; }
+  .row { margin: 13px 0; }
+  .row .lbl { font-size: 13px; color: var(--ink-2); margin-bottom: 3px; display: flex; justify-content: space-between; }
+  .row .lbl b { color: var(--ink-1); font-weight: 650; }
+  .track { position: relative; height: 14px; background: transparent; border-radius: 4px; }
+  .track::before { content: ""; position: absolute; inset: 6px 0; background: var(--grid); border-radius: 3px; }
+  .span { position: absolute; top: 0; height: 14px; background: var(--bar); border-radius: 4px; }
+  .span.cond { background: var(--bar-light); }
+  .axis { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 11.5px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .legend { font-size: 12px; color: var(--ink-2); margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .legend .sw { display: inline-block; width: 14px; height: 9px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+
+  .callout {
+    border-left: 3px solid var(--bar); border-radius: 10px;
+    background: var(--surface-1); padding: 11px 13px; margin: 12px 0;
+    font-size: 13.5px; border-top: 1px solid var(--ring); border-right: 1px solid var(--ring); border-bottom: 1px solid var(--ring);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 6px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-3); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  td b { font-weight: 650; }
+  .caveats li { font-size: 13px; color: var(--ink-2); }
+  .rec { outline: 2px solid var(--bar); outline-offset: -1px; }
+  .rec-tag { font-size: 11px; font-weight: 700; color: var(--bar); text-transform: uppercase; letter-spacing: .06em; }
+  .scrollx { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Build options: 5 boards, DIY&nbsp;→&nbsp;zero-solder</h1>
+  <p class="sub">Claude Code Companion Peripheral · estimated 2026-07-02 · all figures are <b>estimates (±25–30%), not quotes</b> — JLCPCB/PCBWay block automated fetches, so prices come from indexed catalog data and typical current rates. A live JLCPCB quote upload is the only way to firm these up.</p>
+
+  <div class="callout">
+    <b>The surprise finding:</b> full turnkey costs about the same as soldering the switches yourself. Buying switches retail (plus a second shipment) ≈ what JLCPCB charges to solder them for you. So the middle options earn their place as <i>contingency plans</i> (e.g., if the XIAO module listing is out of stock), not as savings.
+  </div>
+
+  <!-- ============ COST CHART ============ -->
+  <div class="card">
+    <h2>Estimated all-in cost — 5 boards' materials, shipped</h2>
+    <p class="note" style="margin:2px 0 0">Includes PCBs, parts, vendor fees, keycaps, and shipping. Scale $100–300.</p>
+    <div class="chart">
+      <!-- scale: $100 (0%) to $300 (100%) -->
+      <div class="row">
+        <div class="lbl"><span><b>A</b> · Full DIY</span><b>$115–145</b></div>
+        <div class="track">
+          <div class="span" style="left:7.5%; width:15%"></div>
+          <div class="span cond" style="left:22.5%; width:30%" title="One-time hot-air/hotplate purchase if you don't own one (~$40–120)"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="lbl"><span><b>B</b> · Vendor SMD, you solder switches</span><b>$180–225</b></div>
+        <div class="track"><div class="span" style="left:40%; width:22.5%"></div></div>
+      </div>
+      <div class="row">
+        <div class="lbl"><span><b>C</b> · Vendor everything, you solder XIAO</span><b>$150–190</b></div>
+        <div class="track"><div class="span" style="left:25%; width:20%"></div></div>
+      </div>
+      <div class="row">
+        <div class="lbl"><span><b>D</b> · Full turnkey (zero solder)</span><b>$175–225</b></div>
+        <div class="track"><div class="span" style="left:37.5%; width:25%"></div></div>
+      </div>
+      <div class="row">
+        <div class="lbl"><span><b>E</b> · Whole device kit (D + shells)</span><b>$210–280</b></div>
+        <div class="track"><div class="span" style="left:55%; width:35%"></div></div>
+      </div>
+      <div class="axis"><span>$100</span><span>$150</span><span>$200</span><span>$250</span><span>$300</span></div>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--bar)"></span>materials + fees + shipping</span>
+        <span><span class="sw" style="background:var(--bar-light)"></span>one-time tools, only if you lack hot-air (A)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPTION A ============ -->
+  <div class="card">
+    <h2>A · Full DIY <span class="cost">$115–145</span></h2>
+    <p class="tagline">5 bare PCBs + every part bought retail; you solder all ~17 components per board.</p>
+    <p style="margin:8px 0 0">
+      <span class="badge"><span class="dot" style="background:var(--critical)"></span>⚠ hot-air/hotplate required</span>
+      &nbsp;Effort <span class="meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+    </p>
+    <div class="split">
+      <div>
+        <h3>You do</h3>
+        <ul>
+          <li>Reflow the SPH0645 mic — bottom-port LGA, <b>no iron-accessible leads</b>; this is the yield risk</li>
+          <li>Iron-solder XIAO castellations, slide, LED, passives, switches</li>
+          <li>8–15 h total for 5 boards</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Where the money goes</h3>
+        <ul>
+          <li>PCBs ~$10–18 · parts ~$90 retail (XIAO $5.40, mic $2.40, switches+caps ~$9/bd)</li>
+          <li>2–3 supplier shipments $15–25</li>
+          <li>+$40–120 hot-air station if you don't own one</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Cheapest in dollars, most expensive in hours and risk. Only sensible if you want the build experience itself.</p>
+  </div>
+
+  <!-- ============ OPTION B ============ -->
+  <div class="card">
+    <h2>B · Vendor does all SMD, you do the switches <span class="cost">$180–225</span></h2>
+    <p class="tagline">JLCPCB assembles mic, LED, slide, passives, XIAO. You solder 5 Choc switches per board.</p>
+    <p style="margin:8px 0 0">
+      <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ beginner-level iron work</span>
+      &nbsp;Effort <span class="meter"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span>
+    </p>
+    <div class="split">
+      <div>
+        <h3>You do</h3>
+        <ul>
+          <li>10 big through-hole joints per board (~15–20 min each board)</li>
+          <li>Order switches + caps retail (~$45–55 incl. shipping — that add-on is why B ≈ D in price)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Vendor does</h3>
+        <ul>
+          <li>All the hard parts: mic reflow, module placement, SMD</li>
+          <li>Fees: setup+stencil ~$33, ~9 part lines × $1.50, possible XIAO fixture fee</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Worth choosing only if you want switch-choice flexibility (try different Choc weights) or the THT quote comes back ugly.</p>
+  </div>
+
+  <!-- ============ OPTION C ============ -->
+  <div class="card">
+    <h2>C · Vendor does everything except the XIAO <span class="cost">$150–190</span></h2>
+    <p class="tagline">The contingency plan if the XIAO's "New Arrivals" library listing is out of stock or its fixture fee is disproportionate. You buy modules from Seeed ($5.40) and solder them on.</p>
+    <p style="margin:8px 0 0">
+      <span class="badge"><span class="dot" style="background:var(--serious)"></span>△ edge-pad soldering, moderate</span>
+      &nbsp;Effort <span class="meter"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span>
+    </p>
+    <ul>
+      <li>14 castellated joints per board with a regular iron — exposed edge pads, very forgiving compared to the mic; ~10 min/board</li>
+      <li>Switches, mic, everything else arrives soldered</li>
+      <li>Skips the fixture fee and the least-proven library listing</li>
+    </ul>
+  </div>
+
+  <!-- ============ OPTION D ============ -->
+  <div class="card rec">
+    <div class="rec-tag">Recommended</div>
+    <h2>D · Full turnkey — zero soldering <span class="cost">$175–225</span></h2>
+    <p class="tagline">JLCPCB assembles every component including the through-hole switches (their wave/hand-solder service) and the XIAO module. Every BOM part already has a JLCPCB library listing.</p>
+    <p style="margin:8px 0 0">
+      <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ zero solder</span>
+      &nbsp;Effort <span class="meter"><i></i><i></i><i></i><i></i><i></i></span>
+    </p>
+    <div class="split">
+      <div>
+        <h3>You do</h3>
+        <ul>
+          <li>Press 5 keycaps on (friction fit)</li>
+          <li>Drive 4 screws at enclosure time</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Cost anatomy (qty 5)</h3>
+        <ul>
+          <li>Parts ~$80 · PCB ~$15 · fees ~$55–75 (setup, stencil, loading, THT, fixture)</li>
+          <li>+ keycaps ~$12 from a keyboard shop (not in JLC's library)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note"><b>Qty note:</b> fixed fees are ~$60–75 regardless of count. At qty 2 that's ~45% of the bill (~$55/board); at qty 5 it dilutes to ~$40/board. Order 5.</p>
+  </div>
+
+  <!-- ============ OPTION E ============ -->
+  <div class="card">
+    <h2>E · Whole device from one vendor <span class="cost">$210–280</span></h2>
+    <p class="tagline">Option D plus 5 sets of enclosure shells from JLC3DP, in one combined JLCPCB checkout. The STL/STEP files are already in the repo (<code>hardware/enclosure/output/</code>).</p>
+    <p style="margin:8px 0 0">
+      <span class="badge"><span class="dot" style="background:var(--good)"></span>✓ zero solder, one order</span>
+      &nbsp;Effort <span class="meter"><i></i><i></i><i></i><i></i><i></i></span>
+    </p>
+    <ul>
+      <li>Shell pairs est. $5–12 each in gray resin or PA12 (nicer than home FDM for this size)</li>
+      <li>Your entire build: 4 screws + 5 keycaps per device</li>
+      <li>Only outside purchase remains the keycaps</li>
+    </ul>
+    <p class="note">Sensible <i>after</i> the layout sign-off (issue #12) and one cheap fit-check print — don't buy 5 shell sets against an unverified fit.</p>
+  </div>
+
+  <!-- ============ TABLE ============ -->
+  <div class="card">
+    <h2>Side-by-side</h2>
+    <div class="scrollx">
+    <table>
+      <thead><tr><th>Option</th><th>Est. cost*</th><th>Your labor</th><th>Solder risk</th><th>Lead time</th></tr></thead>
+      <tbody>
+        <tr><td><b>A</b> DIY</td><td>$115–145 (+tools)</td><td>8–15 h</td><td>High (mic reflow)</td><td>~2 wks + your bench time</td></tr>
+        <tr><td><b>B</b> SMD done</td><td>$180–225</td><td>~1.5 h easy THT</td><td>Low</td><td>~2–3 wks, 2 shipments</td></tr>
+        <tr><td><b>C</b> All but XIAO</td><td>$150–190</td><td>~1 h edge pads</td><td>Low-mod</td><td>~2–3 wks, 2 shipments</td></tr>
+        <tr><td><b>D</b> Turnkey</td><td>$175–225</td><td>caps + screws</td><td><b>None</b></td><td>~2–3.5 wks, 1 shipment (+caps)</td></tr>
+        <tr><td><b>E</b> Device kit</td><td>$210–280</td><td>caps + screws</td><td><b>None</b></td><td>~2–3.5 wks, 1 shipment (+caps)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note" style="margin-top:8px">*Totals for 5 boards' materials incl. shipping and keycaps. PCBWay could run options B–D too, but the Choc switch and XIAO module weren't confirmed in their own parts library — likely consignment there, which adds fees and logistics at this quantity.</p>
+  </div>
+
+  <!-- ============ CAVEATS ============ -->
+  <div class="card">
+    <h2>Caveats & the one real next step</h2>
+    <ul class="caveats">
+      <li><b>Routing doesn't change this math</b> — assembly cost keys off board size, layer count, and part count, all fixed. The board is placed + netlisted; ~30 min of routing in KiCad (issue #13) is required before any of B–E can actually be ordered, but not for choosing between them.</li>
+      <li>The XIAO (C9900176459) and Choc switch (C9900088831) are "New Arrivals" library entries — stock, price, and the module's "assembly fixture" surcharge are unverified. This is the swing variable between B/C/D.</li>
+      <li>Keycaps (MBK blanks) are not in any assembly library — a small keyboard-shop order (~$12) exists in every option.</li>
+      <li>Every dollar figure here is an estimate from catalog snippets; the decision-grade version is uploading the routed board + BOM to JLCPCB's quote tool and reading real numbers off the screen.</li>
+    </ul>
+    <p style="font-size:13.5px"><b>Bottom line:</b> pick <b>D</b> (or <b>E</b> once the enclosure is fit-checked). The zero-solder premium over doing the switch soldering yourself is roughly zero, and A only wins if the hours and the hot-air work are the point.</p>
+  </div>
+
+  <p class="note" style="text-align:center; color:var(--ink-3)">agent-ptt-mic · hardware/assembly_options.html · estimates prepared 2026-07-02</p>
+</div>
+</body>
+</html>
