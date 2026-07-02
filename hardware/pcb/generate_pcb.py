@@ -1,10 +1,18 @@
 """Generate the carrier-board KiCad PCB (`companion_carrier.kicad_pcb`).
 
 Produces a netlisted, fully-placed 2-layer board: XIAO RP2040 module
-footprint, 5x Kailh Choc V1 keyswitches, PCM12SMTR side-actuated latch
-slide, SPH0645LM4H-B mic (back side, bottom-port hole through the board),
-WS2812B status LED, passives, mounting holes, board outline, and GND
-zones on both copper layers.
+(pre-soldered/header variant -- through-hole pins, mounted on the BACK),
+5x Kailh Choc V1 keyswitches, PCM12SMTR side-actuated latch slide, an I2S
+mic BREAKOUT MODULE (header-mounted, front side -- not a bare SMD chip),
+a plain THT status LED + series resistor, THT decoupling passives,
+mounting holes, board outline, and GND zones on both copper layers.
+
+2026-07-02 revision: every active part on this board is now a
+through-hole / header-mount component, hand-solderable with a plain iron
+-- no reflow or hot-air needed anywhere (see hardware/BOM.md and
+docs/PHYSICAL_DESIGN_SPEC.md for why: the XIAO Geoff ordered is the
+pre-soldered/header SKU, and the mic and LED were swapped off bare-SMD/
+addressable parts to match).
 
 Deliberately NOT routed: signal traces are left to an interactive KiCad
 session where DRC runs live (see README.md in this directory). Every net
@@ -43,7 +51,7 @@ def pos(x, y, angle=None):
 NET_NAMES = [
     "", "GND", "3V3", "5V",
     "PTT", "LATCH", "KEY_APPROVE", "KEY_REMEMBER", "KEY_REJECT", "KEY_MODE",
-    "I2S_SD", "I2S_BCLK", "I2S_LRCLK", "LED_DATA", "LED_DIN", "SPARE_D9",
+    "I2S_SD", "I2S_BCLK", "I2S_LRCLK", "LED_DATA", "LED_A", "SPARE_D9",
 ]
 NETS = {name: Net(number=i, name=name) for i, name in enumerate(NET_NAMES)}
 
@@ -109,6 +117,19 @@ def fp(name, ref, at, pads, extra_items=None, layer="F.Cu", smd=True):
     return f
 
 
+def header_row(prefix, cx, cy0, count, pitch, nets, pad_d=1.8, drill_d=1.0,
+               vertical=True):
+    """A single row of THT header pins -- used for both the XIAO module's
+    presoldered pins (pushed through the carrier and soldered) and the mic
+    breakout's header."""
+    pads = []
+    for i in range(count):
+        y = cy0 + i * pitch if vertical else cy0
+        x = cx if vertical else cx + i * pitch
+        pads.append(tht_pad(f"{prefix}{i+1}", x, y, pad_d, drill_d, nets[i]))
+    return pads
+
+
 def outline_lines(w, h, layer="F.SilkS"):
     x, y = w / 2, h / 2
     pts = [(-x, -y), (x, -y), (x, y), (-x, y), (-x, -y)]
@@ -124,37 +145,35 @@ def outline_lines(w, h, layer="F.SilkS"):
 # Footprints
 # --------------------------------------------------------------------------
 def xiao_rp2040(ref, cx, cy):
-    """XIAO module, USB-C pointing to +Y (board bottom edge).
+    """XIAO module -- PRE-SOLDERED/header SKU, mounted on the carrier's
+    BACK. Its own presoldered header pins pass through 14 plated holes and
+    solder flush on the carrier's front copper; no separate header/socket
+    part needed (see design_params.py XIAO_MODULE_STANDOFF). Component
+    side (RP2040, USB-C) faces away from the carrier, into the back shell
+    cavity -- USB-C points to +Y (board bottom edge).
 
-    Pin map with USB DOWN, viewed from the front: the module is rotated 180
-    deg from Seeed's usual USB-up drawing, so the columns swap/flip.
+    Pin map viewed from the BACK (component side facing away): the module
+    is rotated 180 deg from Seeed's usual USB-up/top-view drawing, so the
+    columns swap/flip same as the prior flush-mount revision.
     VERIFY pad geometry against Seeed's official footprint before fab.
     """
-    pitch, col_x = P.XIAO_PAD_PITCH, 8.2
-    pad_w, pad_l = 2.8, 1.7  # long axis toward board edge
-    # Seeed's drawing is USB-up: left col top->bottom D0..D6, right col
-    # top->bottom 5V,GND,3V3,D10,D9,D8,D7. Our module is rotated 180 deg
-    # (USB down), which swaps columns and reverses each: USB-down left col
-    # top->bottom is D7,D8,D9,D10,3V3,GND,5V.
+    pitch, col_x = P.XIAO_PAD_PITCH, P.XIAO_HDR_ROW_SPACING / 2
     left = ["KEY_REJECT", "KEY_MODE", "SPARE_D9", "LED_DATA", "3V3", "GND", "5V"]
-    # USB-up left col top->bottom: D0..D6 -> USB-down right col top->bottom: D6..D0
     right = ["KEY_REMEMBER", "I2S_LRCLK", "I2S_BCLK", "I2S_SD",
              "KEY_APPROVE", "LATCH", "PTT"]
-    pads = []
     y0 = -pitch * 3
-    for i in range(7):
-        pads.append(smd_pad(f"L{i+1}", -col_x, y0 + i * pitch, pad_w, pad_l,
-                            netname=left[i]))
-        pads.append(smd_pad(f"R{i+1}", col_x, y0 + i * pitch, pad_w, pad_l,
-                            netname=right[i]))
-    body = outline_lines(P.XIAO_W, P.XIAO_L)
-    usb = outline_lines(P.XIAO_USB_W, 7.35)
+    pads = (header_row("L", -col_x, y0, 7, pitch, left)
+            + header_row("R", col_x, y0, 7, pitch, right))
+    body = outline_lines(P.XIAO_W, P.XIAO_L, layer="B.SilkS")
+    usb = outline_lines(P.XIAO_USB_W, 7.35, layer="B.SilkS")
     for line in usb:
         line.start.Y += P.XIAO_L / 2 - 7.35 / 2 + P.XIAO_USB_OVERHANG
         line.end.Y += P.XIAO_L / 2 - 7.35 / 2 + P.XIAO_USB_OVERHANG
-    return fp("XIAO-RP2040_USB-down", ref, pos(cx, cy), pads,
+    return fp("XIAO-RP2040_preSoldered_header", ref, pos(cx, cy), pads,
+              layer="B.Cu", smd=False,
               extra_items=body + usb + [
-                  FpText(type="user", text="USB-C v", layer="F.SilkS",
+                  FpText(type="user", text="USB-C v (hangs off back)",
+                         layer="B.SilkS",
                          position=Position(X=0, Y=P.XIAO_L / 2 - 2),
                          effects=Effects(font=Font(height=0.7, width=0.7,
                                                    thickness=0.11)))])
@@ -191,32 +210,33 @@ def slide_pcm12(ref, cx, cy):
     return fp("CK_PCM12SMTR", ref, pos(cx, cy), pads, extra_items=body)
 
 
-def mic_sph0645(ref, cx, cy):
-    """SPH0645LM4H-B on the BACK side; port hole through the PCB.
-    Land pattern approximated from the Knowles datasheet -- VERIFY."""
-    pads = [
-        smd_pad(1, -1.2, -0.85, 0.6, 0.5, "I2S_LRCLK", layer="B.Cu"),  # WS
-        smd_pad(2, -1.2, 0.85, 0.6, 0.5, "I2S_SD", layer="B.Cu"),      # DATA
-        smd_pad(3, 0.0, 0.85, 0.6, 0.5, "I2S_BCLK", layer="B.Cu"),     # CLK
-        smd_pad(4, 1.2, 0.85, 0.6, 0.5, "GND", layer="B.Cu"),          # GND
-        smd_pad(5, 1.2, -0.85, 0.6, 0.5, "3V3", layer="B.Cu"),         # VDD
-        smd_pad(6, 0.0, -0.85, 0.6, 0.5, "GND", layer="B.Cu"),         # SEL->GND (left ch)
-        npth(0, 0, P.MIC_PORT_PCB_HOLE),
-    ]
-    body = outline_lines(P.MIC_L, P.MIC_W, layer="B.SilkS")
-    return fp("Knowles_SPH0645LM4H-B", ref, pos(cx, cy), pads,
-              extra_items=body, layer="B.Cu")
+def mic_breakout(ref, cx, cy):
+    """I2S mic breakout MODULE (e.g. Adafruit SPH0645, PID 3421) -- a
+    6-pin THT header, front side, standing off the carrier per
+    MIC_BRK_STANDOFF. Same signal order as the breadboard-track wiring in
+    docs/SPEC.md §8. Pin spacing/positions approximate -- VERIFY against
+    the physical breakout before finalizing the enclosure window."""
+    nets = ["3V3", "GND", "I2S_BCLK", "I2S_SD", "I2S_LRCLK", "GND"]  # SEL->GND
+    n = P.MIC_BRK_PINS
+    x0 = -(n - 1) * P.MIC_BRK_PIN_PITCH / 2
+    pads = header_row("P", x0, 0.0, n, P.MIC_BRK_PIN_PITCH, nets,
+                      vertical=False)
+    body = outline_lines(P.MIC_BRK_L, P.MIC_BRK_W)
+    return fp("MicBreakout_SPH0645-style", ref, pos(cx, cy), pads,
+              extra_items=body, smd=False)
 
 
-def led_ws2812b(ref, cx, cy):
+def led_tht(ref, cx, cy):
+    """Plain 3mm THT LED. Anode (long lead) -> LED_A (via R1 from
+    LED_DATA/GPIO3), cathode -> GND."""
+    half = P.LED_THT_LEAD_SPACING / 2
     pads = [
-        smd_pad(1, -2.45, -1.6, 1.5, 1.0, "3V3"),
-        smd_pad(2, -2.45, 1.6, 1.5, 1.0, None),        # DOUT, unused
-        smd_pad(3, 2.45, 1.6, 1.5, 1.0, "GND"),
-        smd_pad(4, 2.45, -1.6, 1.5, 1.0, "LED_DIN"),   # DIN (via R1)
+        tht_pad(1, -half, 0, 1.4, 0.8, "LED_A"),   # anode
+        tht_pad(2, half, 0, 1.4, 0.8, "GND"),      # cathode
     ]
-    body = outline_lines(P.LED_SIZE, P.LED_SIZE)
-    return fp("WS2812B_5050", ref, pos(cx, cy), pads, extra_items=body)
+    body = [FpCircle(center=Position(X=0, Y=0), end=Position(X=P.LED_THT_DIA / 2, Y=0),
+                     layer="F.SilkS", width=0.12)]
+    return fp("LED_3mm_THT", ref, pos(cx, cy), pads, extra_items=body, smd=False)
 
 
 def passive_0603(ref, cx, cy, net1, net2, angle=None):
@@ -226,6 +246,21 @@ def passive_0603(ref, cx, cy, net1, net2, angle=None):
     ]
     return fp(f"R_C_0603", ref, pos(cx, cy, angle), pads,
               extra_items=outline_lines(1.6, 0.8, layer="F.Fab"))
+
+
+def passive_tht(ref, cx, cy, net1, net2, spacing, pad_d=1.6, drill_d=0.8):
+    """Generic THT passive (radial ceramic cap or axial resistor, formed
+    to a vertical/radial lead spacing) -- hand-solderable, no fine-pitch
+    tweezer work. Used for the decoupling caps and the LED series
+    resistor so the whole board stays iron-only."""
+    half = spacing / 2
+    pads = [
+        tht_pad(1, -half, 0, pad_d, drill_d, net1),
+        tht_pad(2, half, 0, pad_d, drill_d, net2),
+    ]
+    return fp("THT_passive", ref, pos(cx, cy), pads,
+              extra_items=outline_lines(spacing + 1.0, 2.0, layer="F.Fab"),
+              smd=False)
 
 
 def mount_hole(ref, cx, cy):
@@ -305,16 +340,19 @@ def build():
 
     fps.append(slide_pcm12("SW6", P.PCB_W / 2 - P.SLIDE_BODY_W / 2,
                            P.SLIDE_POS_Y))
-    fps.append(mic_sph0645("MK1", *P.MIC_POS))
-    fps.append(led_ws2812b("D1", *P.LED_POS))
+    fps.append(mic_breakout("MK1", *P.MIC_POS))
+    fps.append(led_tht("D1", *P.LED_POS))
     fps.append(xiao_rp2040("U1", 0.0, P.XIAO_POS_Y))
 
-    # Passives: mic decoupling near mic (back side would be ideal; front is
-    # fine for v1), LED resistor + decoupling near LED, bulk near XIAO 3V3.
-    fps.append(passive_0603("C1", -6.0, 6.5, "3V3", "GND"))
-    fps.append(passive_0603("C2", 9.0, 12.5, "3V3", "GND"))
-    fps.append(passive_0603("R1", 14.0, 13.5, "LED_DATA", "LED_DIN"))
-    fps.append(passive_0603("C3", -13.0, 84.0, "3V3", "GND"))  # clear of U1
+    # Passives: all THT now (radial/axial leads) -- no fine-pitch SMD parts
+    # left on the board at all. Mic decoupling near mic, LED resistor near
+    # LED, bulk cap near the XIAO's 3V3 pins.
+    fps.append(passive_tht("C1", -16.0, 20.0, "3V3", "GND", spacing=5.0))
+    fps.append(passive_tht("C2", 9.0, 20.0, "3V3", "GND", spacing=5.0))
+    fps.append(passive_tht("R1", 14.0, 13.5, "LED_DATA", "LED_A",
+                           spacing=P.RES_THT_LEAD_SPACING))
+    fps.append(passive_tht("C3", -13.0, 84.0, "3V3", "GND",
+                           spacing=5.0))  # clear of U1
 
     for i, (x, y) in enumerate(P.PCB_HOLES, start=1):
         fps.append(mount_hole(f"H{i}", x, y))

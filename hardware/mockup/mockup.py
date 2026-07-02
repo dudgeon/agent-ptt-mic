@@ -2,9 +2,13 @@
 
 Every component is modelled at its real datasheet envelope (dimensions from
 hardware/design_params.py — same source the PCB and enclosure use), placed
-at its true PCB position: XIAO RP2040 module (with USB-C connector), 5x
-Kailh Choc V1 switches with MBK-profile caps, PCM12SMTR latch slide,
-SPH0645 mic (back side), WS2812B LED, carrier PCB, and both shell halves.
+at its true PCB position: XIAO RP2040 module (header-mounted on the BACK,
+with its USB-C connector), 5x Kailh Choc V1 switches with MBK-profile caps,
+PCM12SMTR latch slide, an I2S mic breakout module (front side), a plain
+THT status LED, carrier PCB, and both shell halves.
+
+2026-07-02: XIAO/mic/LED all switched from the flush-SMD-mount revision to
+header/THT mounting -- see design_params.py's module docstring for why.
 
 Outputs into hardware/mockup/output/:
   * mockup_assembly.step   — full colored STEP assembly
@@ -36,6 +40,12 @@ def box_at(w, l, h, x, yb, z0, r=0.0):
     return wp
 
 
+def cyl_at(d, h, x, yb, z0):
+    """Cylinder centred at board (x, yb), from z0 up h."""
+    return (cq.Workplane("XY", origin=(x, ycad(yb), z0))
+            .circle(d / 2).extrude(h))
+
+
 def build_pcb():
     pcb = (cq.Workplane("XY", origin=(0, 0, -P.PCB_T))
            .rect(P.PCB_W, P.PCB_L).extrude(P.PCB_T)
@@ -61,13 +71,25 @@ def build_keycap(x, yb):
 
 
 def build_xiao():
+    """Module hangs off the carrier's BACK on its own header pins: walk
+    outward (more negative Z) from the carrier back face (-PCB_T) through
+    the standoff gap, then the module's own PCB, arriving at its
+    component/USB-C face (which points away from the carrier)."""
     yb = P.XIAO_POS_Y
-    board = box_at(P.XIAO_W, P.XIAO_L, P.XIAO_PCB_T, 0, yb, 0, r=1.5)
-    chip = box_at(4.0, 3.5, 0.9, 0, yb - 2.0, P.XIAO_PCB_T)
+    inner_z = -P.PCB_T - P.XIAO_MODULE_STANDOFF        # module PCB inner face
+    outer_z = inner_z - P.XIAO_PCB_T                    # module PCB outer (component) face
+    board = box_at(P.XIAO_W, P.XIAO_L, P.XIAO_PCB_T, 0, yb, outer_z, r=1.5)
+    chip = box_at(4.0, 3.5, 0.9, 0, yb - 2.0, outer_z - 0.9)
     usb_yb = yb + P.XIAO_L / 2 + P.XIAO_USB_OVERHANG - 7.35 / 2
     usb = box_at(P.XIAO_USB_W, 7.35, P.XIAO_USB_H, 0, usb_yb,
-                 P.XIAO_PCB_T, r=1.2)
-    return board.union(chip).union(usb)
+                 outer_z - P.XIAO_USB_H, r=1.2)
+    # header pins bridging the standoff gap (cosmetic, approximate)
+    pins = cyl_at(1.0, P.XIAO_MODULE_STANDOFF, -P.XIAO_HDR_ROW_SPACING / 2,
+                  yb - 3 * P.XIAO_PAD_PITCH, inner_z)
+    pins = pins.union(cyl_at(1.0, P.XIAO_MODULE_STANDOFF,
+                             P.XIAO_HDR_ROW_SPACING / 2,
+                             yb - 3 * P.XIAO_PAD_PITCH, inner_z))
+    return board.union(chip).union(usb).union(pins)
 
 
 def build_slide():
@@ -83,13 +105,21 @@ def build_slide():
 
 
 def build_mic():
+    """Mic BREAKOUT MODULE, front side, standing off the carrier on its
+    own header pins (design_params.py MIC_BRK_STANDOFF) -- not a bare chip
+    reflowed flush, per the pre-soldered-XIAO/header-everything revision."""
     x, yb = P.MIC_POS
-    return box_at(P.MIC_L, P.MIC_W, P.MIC_H, x, yb, -P.PCB_T - P.MIC_H)
+    return box_at(P.MIC_BRK_L, P.MIC_BRK_W, P.MIC_BRK_H, x, yb,
+                  P.MIC_BRK_STANDOFF, r=1.0)
 
 
 def build_led():
+    """Plain 3mm THT LED (dome) + its series resistor, front side."""
     x, yb = P.LED_POS
-    return box_at(P.LED_SIZE, P.LED_SIZE, P.LED_H, x, yb, 0)
+    led = cyl_at(P.LED_THT_DIA, P.LED_THT_H, x, yb, 0)
+    res = box_at(P.RES_THT_LEN, P.RES_THT_DIA, P.RES_THT_DIA,
+                 x, yb + 5.5, 0.5)
+    return led.union(res)
 
 
 PARTS = {}  # name -> (solid, color rgb 0-1)

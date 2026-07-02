@@ -7,25 +7,53 @@ X=0 at board centreline (+X right when looking at the front face),
 Y=0 at board top edge (+Y downward toward the USB-C end).
 
 Dimension sources are noted per block. Anything marked VERIFY must be
-checked against the current datasheet before ordering fabrication — these
-values are correct per the datasheets as known at design time, but the
-project convention (docs/SPEC.md §0) is to re-verify time-sensitive facts.
+checked against the current datasheet/physical part before ordering
+fabrication — these values are correct per the datasheets as known at
+design time, but the project convention (docs/SPEC.md §0) is to re-verify
+time-sensitive facts.
+
+Mounting revision (2026-07-02): the XIAO RP2040 Geoff ordered is the
+PRE-SOLDERED variant (docs/SPEC.md §4) -- it arrives with 0.1" pin headers
+already on it, not bare castellated edges meant for reflow onto a carrier.
+Likewise the mic is a breakout MODULE (pin-header, like the original
+breadboard-track SPH0645 breakout), not a bare SMD chip, and the status
+LED is a plain THT LED, not an addressable SMD WS2812B. Net effect: the
+whole carrier is now hand-iron-solderable, no reflow/hot-air anywhere --
+at the cost of a notably thicker enclosure, since a header-mounted module
+needs real standoff clearance instead of sitting flush.
 """
 
 # --------------------------------------------------------------------------
-# Seeed Studio XIAO RP2040 module
-# Source: Seeed wiki + XIAO RP2040 dimension drawing.
+# Seeed Studio XIAO RP2040 module -- PRE-SOLDERED variant (pin headers)
+# Source: Seeed wiki pinout (X-Y pin spacing is a fixed module dimension,
+# unchanged by header-vs-castellated). Header standoff/pin-length figures
+# are typical-for-class estimates -- VERIFY against the physical board
+# before finalizing enclosure thickness.
 # --------------------------------------------------------------------------
 XIAO_L = 21.0          # module PCB length (along USB axis)
 XIAO_W = 17.8          # module PCB width
 XIAO_PCB_T = 1.2       # module PCB thickness
-XIAO_PAD_PITCH = 2.54  # castellated edge pads, 7 per long side
+XIAO_PAD_PITCH = 2.54  # header pin pitch, 7 per long side
 XIAO_PADS_PER_SIDE = 7
 XIAO_USB_W = 8.94      # USB-C connector width
-XIAO_USB_H = 3.26      # USB-C connector height (above module PCB top)
+XIAO_USB_H = 3.26      # USB-C connector height (above module top face)
 XIAO_USB_OVERHANG = 1.3   # connector protrusion past module PCB edge
-XIAO_TOP_CLEARANCE = 4.6  # tallest point above carrier when soldered flat
-                          # (module PCB + USB-C shell), VERIFY on real board
+
+# Mounting: module sits on the carrier's BACK, pin-side facing the carrier.
+# Its own presoldered header pins pass through 14 plated holes in the
+# carrier and solder flush on the carrier's FRONT copper (a clear area near
+# the bottom edge, away from the switch cluster) -- no separate header/
+# socket part needed, and it's permanent rather than a swappable socket
+# (simplest + thinnest of the two mounting options; a female-header socket
+# would add another ~8.5mm of standoff for zero benefit at this quantity).
+XIAO_HDR_ROW_SPACING = 16.4  # column-to-column (was col_x*2 in prior rev)
+XIAO_MODULE_STANDOFF = 6.0   # VERIFY: gap from carrier back face to module
+                             # PCB underside, bridged by the module's own
+                             # presoldered pin legs
+XIAO_TOTAL_DEPTH = (XIAO_MODULE_STANDOFF + XIAO_PCB_T + XIAO_USB_H)  # 10.46
+                             # carrier back face -> outward tip of USB-C
+                             # (component side, incl. USB-C, faces AWAY
+                             # from the carrier, deeper into the back shell)
 
 # --------------------------------------------------------------------------
 # Kailh Choc V1 (PG1350) low-profile mechanical keyswitch
@@ -54,21 +82,26 @@ KEY_PITCH_X = 18.0        # Choc-standard key spacing
 KEY_PITCH_Y = 17.0
 
 # --------------------------------------------------------------------------
-# Knowles SPH0645LM4H-B I2S MEMS microphone (bare part, bottom-port)
-# Source: Knowles SPH0645LM4H-B datasheet.
+# I2S MEMS mic BREAKOUT MODULE (e.g. Adafruit SPH0645, PID 3421) -- same
+# part family as the breadboard-track BOM (docs/SPEC.md OQ2), not the bare
+# SMD chip used in the previous PCB revision. Dimensions approximate --
+# VERIFY against the physical breakout before finalizing enclosure cutout.
 # --------------------------------------------------------------------------
-MIC_L = 3.5
-MIC_W = 2.65
-MIC_H = 0.98
-MIC_PORT_PCB_HOLE = 0.7   # acoustic port hole through carrier PCB
-# Bottom-port: mic is mounted on the BACK of the carrier; sound enters
-# through the PCB hole from the front side.
+MIC_BRK_L = 17.8          # breakout PCB length (approx, VERIFY)
+MIC_BRK_W = 12.0          # breakout PCB width (approx, VERIFY)
+MIC_BRK_H = 1.6           # breakout PCB + capsule, low profile (approx)
+MIC_BRK_PINS = 6          # 3V, GND, BCLK, DOUT, LRCL, SEL -- matches the
+                          # breadboard-track wiring in docs/SPEC.md §8
+MIC_BRK_PIN_PITCH = 2.54
+MIC_BRK_STANDOFF = 3.0    # header standoff above carrier front face
 
 # --------------------------------------------------------------------------
 # C&K PCM12SMTR right-angle SMT slide switch (always-stream latch)
 # Actuator extends past the PCB edge -> pokes through the enclosure side
 # wall, per PHYSICAL_DESIGN_SPEC §2.3 (latch on the side of the shell).
 # Source: C&K PCM12 series datasheet. VERIFY exact body dims before fab.
+# Kept as SMD: it's ordinary hand-solder-friendly gull-wing pads, not a
+# reflow-only part like the mic chip was -- no reason to swap it out.
 # --------------------------------------------------------------------------
 SLIDE_BODY_L = 8.7        # along PCB edge
 SLIDE_BODY_W = 3.6        # into the board
@@ -78,11 +111,18 @@ SLIDE_KNOB_EXT = 2.4      # knob protrusion past PCB edge at mid-throw
 SLIDE_TRAVEL = 2.0        # end-to-end actuator travel
 
 # --------------------------------------------------------------------------
-# WS2812B (5050) addressable status LED, on carrier top edge (D10/GPIO3)
+# Plain THT status LED + series resistor, front side, D10/GPIO3.
+# Replaces the addressable WS2812B from the previous revision -- simpler,
+# hand-solderable, no per-color addressing (firmware just drives GPIO3
+# high/low instead of bit-banging WS2812 timing).
 # --------------------------------------------------------------------------
-LED_SIZE = 5.0
-LED_H = 1.6
-LED_WINDOW = 2.5          # enclosure light hole dia
+LED_THT_DIA = 3.0         # 3mm THT LED
+LED_THT_LEAD_SPACING = 2.0
+LED_THT_H = 4.5           # dome height above PCB
+LED_WINDOW = 3.4          # enclosure light hole dia
+RES_THT_LEN = 6.5         # axial resistor body length (1/4W)
+RES_THT_DIA = 2.2
+RES_THT_LEAD_SPACING = 10.0  # formed/bent lead spacing for vertical mount
 
 # --------------------------------------------------------------------------
 # Carrier PCB
@@ -105,10 +145,11 @@ KEY_POS = {
     "mode":     ( KEY_PITCH_X / 2, 47.0),   # bottom-right -> Shift+Tab
     "ptt":      (0.0, 68.0),                # bottom-centre, thumb rest
 }
-MIC_POS = (0.0, 6.5)          # top centre, back side, port thru PCB
+MIC_POS = (0.0, 10.0)         # top centre, front side (breakout module)
 LED_POS = (14.0, 8.0)         # top right, front side
 SLIDE_POS_Y = 16.0            # right board edge, actuator past edge
-XIAO_POS_Y = 92.5             # module centre; USB-C flush w/ bottom edge
+XIAO_POS_Y = 92.5             # module centre, BACK side; USB-C flush w/
+                              # bottom edge, facing away into the back shell
 
 # --------------------------------------------------------------------------
 # Enclosure (FDM, split shell: front + back)
@@ -116,7 +157,11 @@ XIAO_POS_Y = 92.5             # module centre; USB-C flush w/ bottom edge
 WALL = 2.0                # min wall for FDM
 SHELL_CLEAR = 0.6         # PCB-to-inner-wall lateral clearance
 FRONT_GAP = 0.5           # switch housing top to front-wall inner face
-BACK_GAP = 3.2            # PCB back clearance (switch pins 2.65 + margin)
+# Back clearance must fit the XIAO module hanging off the back via its own
+# header pins (XIAO_TOTAL_DEPTH ~= 10.5mm) plus margin -- this is the
+# dimension that grew substantially from the flush-SMD-mount revision
+# (was 3.2mm there; the module alone now needs ~10.5mm).
+BACK_GAP = 11.5
 SHELL_CORNER_R = 6.0      # outer corner radius (hand feel)
 CAP_HOLE_CLEAR = 0.5      # per-side clearance around keycaps in front face
 
@@ -124,11 +169,11 @@ CAP_HOLE_CLEAR = 0.5      # per-side clearance around keycaps in front face
 SHELL_W = PCB_W + 2 * (SHELL_CLEAR + WALL)                    # ≈ 49.2
 SHELL_L = PCB_L + 2 * (SHELL_CLEAR + WALL)                    # ≈ 109.2
 SHELL_T = (WALL + BACK_GAP + PCB_T + CHOC_H_ABOVE_PCB
-           + FRONT_GAP + WALL)                                # ≈ 14.3
+           + FRONT_GAP + WALL)                                # ≈ 22.6
 
 BOSS_D = 5.0              # screw boss dia (M2 self-tapping)
 BOSS_PILOT = 1.7          # pilot hole for M2 self-tap
-MIC_SHELL_HOLE = 1.5      # front-face acoustic hole dia
+MIC_SHELL_CLEAR = 0.8     # front-face window clearance around mic breakout
 USB_CUT_W = XIAO_USB_W + 1.6   # bottom-wall USB-C opening
 USB_CUT_H = XIAO_USB_H + 1.2
 SLIDE_SLOT_L = SLIDE_BODY_L - 1.0  # side-wall slot for latch knob

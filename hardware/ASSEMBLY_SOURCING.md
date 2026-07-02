@@ -1,6 +1,25 @@
 # Assembly sourcing — JLCPCB vs PCBWay (zero-solder feasibility)
 
-**Researched:** 2026-07-02. **Method note:** direct `WebFetch` of jlcpcb.com and
+> **⚠ Superseded by the 2026-07-02 mounting revision — re-verify before
+> trusting this.** This research and `hardware/assembly_options.html` were
+> both done against the *original* BOM: a bare-castellated XIAO meant for
+> flush reflow, a bare SMD mic chip, and an SMD WS2812B LED. The board has
+> since changed to match the XIAO Geoff actually ordered (pre-soldered/
+> header SKU) plus a mic breakout module and a plain THT LED — see
+> `hardware/BOM.md` and `docs/PHYSICAL_DESIGN_SPEC.md` §7. The JLCPCB
+> "XIAO RP2040" library listing below (C9900176459, needs an "assembly
+> fixture") was almost certainly for the bare/castellated SKU meant for
+> automated reflow placement — a header-pin module standing off the board
+> on its own pins isn't a typical pick-and-place or wave-solder candidate.
+> **Practical effect:** full zero-solder turnkey (assembly_options.html
+> option D) is now doubtful specifically for the XIAO module — the
+> switches, mic breakout, and LED/passives are still ordinary THT vendor
+> work, but the module itself (14 big, easy pins) may be the one part
+> worth self-soldering even in an otherwise-turnkey order. This needs a
+> fresh vendor check, not a guess — flagged rather than silently
+> reconciled.
+
+**Researched:** 2026-07-02 (pre-revision). **Method note:** direct `WebFetch` of jlcpcb.com and
 pcbway.com pages returned HTTP 403 (bot-blocked) for every attempt, including
 inside the automated deep-research workflow (21/21 sources failed there).
 Everything below comes from search-engine-indexed snippets, triangulated

@@ -16,13 +16,20 @@ Two concurrent tracks:
    in hand).
 2. **PCB / industrial-design track (SPEC.md §16).** Design spike Geoff
    requested while awaiting delivery; runs in parallel with (not instead of)
-   the breadboard plan. **First full design pass complete (2026-07-02):**
-   locked part picks + netlist (`hardware/BOM.md`), placed/netlisted KiCad
-   carrier board (`hardware/pcb/`), FDM enclosure STL/STEP
-   (`hardware/enclosure/`), and a component-accurate 3D mockup with renders
-   (`hardware/mockup/`). See `docs/PHYSICAL_DESIGN_SPEC.md` §7 for the
-   deviations awaiting Geoff's confirmation. Remaining: layout sign-off,
-   PCB routing + pre-fab footprint verification, first fit-check print.
+   the breadboard plan. **First full design pass complete (2026-07-02),
+   then revised same day (v2):** Geoff confirmed the XIAO he ordered is the
+   **pre-soldered/header SKU** (answers issue #9 ahead of physical arrival —
+   still worth a visual check on arrival that it's the RP2040 family member)
+   and asked to cut unnecessary SMD scope. Every active part is now
+   through-hole/header-mount — hand-solderable, no reflow/hot-air anywhere —
+   at the cost of a thicker enclosure (~22.6mm vs. ~14.3mm). See
+   `docs/PHYSICAL_DESIGN_SPEC.md` §7 for the full rationale and the
+   deviations awaiting Geoff's confirmation. The vendor-sourcing research
+   (`hardware/ASSEMBLY_SOURCING.md`) and cost artifact
+   (`hardware/assembly_options.html`) predate this revision and need
+   re-checking — tracked as [#15](https://github.com/dudgeon/agent-ptt-mic/issues/15).
+   Remaining: layout sign-off, PCB routing + pre-fab footprint
+   verification, first fit-check print.
 
 ## Milestone progress (SPEC.md §12)
 

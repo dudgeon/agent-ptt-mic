@@ -1,12 +1,12 @@
 # 3D mockup — integrated design, real component dimensions
 
 Dimensionally representative assembly of the whole device: carrier PCB,
-XIAO RP2040 module (with its USB-C connector at the bottom opening), 5×
-Kailh Choc V1 switches + MBK-profile caps, PCM12SMTR latch slide (knob
-through the right wall), SPH0645 mic (back side), WS2812B LED, and both
-shell halves. Every envelope comes from `../design_params.py` — the same
-values that drive the PCB and enclosure, so the mockup can't silently
-disagree with them.
+XIAO RP2040 module (header-mounted on the back, USB-C facing away into
+the back shell), 5× Kailh Choc V1 switches + MBK-profile caps, PCM12SMTR
+latch slide (knob through the right wall), an I2S mic breakout module
+(front side), a plain THT LED, and both shell halves. Every envelope comes
+from `../design_params.py` — the same values that drive the PCB and
+enclosure, so the mockup can't silently disagree with them.
 
 Render-color note: the PTT cap is shown orange purely so reviews can point
 at it; the real build is all-blank caps per the minimalist decision.

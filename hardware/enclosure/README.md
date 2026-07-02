@@ -5,15 +5,23 @@ Two printed parts (CadQuery source: `enclosure.py`, all dimensions from
 
 - **Front shell** — front face + full-depth perimeter walls. Openings: one
   shared macropad-style cutout for the 2×2 keystroke cluster, a separate
-  framed opening for the PTT key, ⌀1.5 mm mic acoustic hole and ⌀2.5 mm LED
-  window at the top, latch-slide slot in the right wall, USB-C opening in
-  the bottom wall. Four internal bosses locate and seat the PCB.
-- **Back lid** — flush inset panel with four spacer bosses. M2 × 10
+  framed opening for the PTT key, a windowed opening sized to the mic
+  breakout module and a ⌀3.4mm LED window at the top, latch-slide slot in
+  the right wall, USB-C opening in the bottom wall (now much deeper in Z,
+  since the module hangs off the back — see below). Four internal bosses
+  locate and seat the PCB.
+- **Back lid** — flush inset panel with four spacer bosses. M2 × 16
   self-tapping screws enter from the back: lid → spacer → PCB → front boss.
 
-Envelope: **49.2 × 109.2 × 14.3 mm** — palm-sized vertical remote. The grip
-zone (blank lower third of the front face) is where the XIAO sits inside;
-thumb lands on PTT at bottom-centre with the 2×2 cluster above it.
+Envelope: **49.2 × 109.2 × 22.6 mm** — palm-sized vertical remote, thicker
+than the original 14.3mm estimate. That growth is a direct, deliberate
+consequence of the 2026-07-02 mounting revision: the XIAO Geoff actually
+ordered is the pre-soldered/header SKU, which mounts on the carrier's BACK
+via its own header pins rather than sitting flush — the `BACK_GAP` needed
+to clear the module (module standoff + PCB + USB-C) grew from 3.2mm to
+11.5mm. See `docs/PHYSICAL_DESIGN_SPEC.md` §7. The grip zone (blank lower
+third of the front face) is where the XIAO hangs off the back; thumb lands
+on PTT at bottom-centre with the 2×2 cluster above it.
 
 ## Regenerating
 

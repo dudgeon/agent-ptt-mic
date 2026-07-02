@@ -1,11 +1,15 @@
 # Carrier PCB — KiCad project
 
 2-layer carrier board (44 × 104 mm) for the handheld device: hosts the XIAO
-RP2040 module (castellated, USB-C at the bottom edge), 5× Kailh Choc V1
-keyswitches, the PCM12SMTR side-actuated latch slide, the SPH0645LM4H-B mic
-(back side, bottom-port through the board), a WS2812B status LED, and
-passives. Net/pin assignments follow `docs/SPEC.md` §8 plus the status LED
-on spare D10/GPIO3 — the full netlist table is in `../BOM.md`.
+RP2040 module (**pre-soldered/header SKU**, mounted on the BACK via its own
+header pins, USB-C facing away into the back shell), 5× Kailh Choc V1
+keyswitches, the PCM12SMTR side-actuated latch slide, an I2S mic
+**breakout module** (front side, THT header), a plain **THT LED** + THT
+passives — every active part is now through-hole/header-mount, hand-
+solderable with a plain iron (2026-07-02 revision; see
+`docs/PHYSICAL_DESIGN_SPEC.md` §7 for why). Net/pin assignments follow
+`docs/SPEC.md` §8 plus the status LED on spare D10/GPIO3 — the full
+netlist table is in `../BOM.md`.
 
 ## Files
 
@@ -38,20 +42,24 @@ KiCad available to validate them is where errors would creep in.
 Footprint geometry here is derived from datasheets/community footprints at
 design time. Before generating gerbers:
 
-1. **XIAO module pads** — check pad width/length/row-spacing against Seeed's
-   official footprint (Seeed OPL / wiki KiCad library). Ours: 1.7 × 2.8 mm
-   pads, columns at ±8.2 mm, 2.54 mm pitch.
-2. **XIAO pin order** — the module is placed USB-down; the pad-to-net map in
-   `generate_pcb.py` encodes the 180° rotation of Seeed's USB-up pinout
-   drawing. Sanity-check against a physical board before soldering.
-3. **PCM12SMTR land pattern** — approximated; pull the real drawing from the
+1. **XIAO header pin holes** — drill/pad size (currently 1.0mm drill,
+   1.8mm pad) must fit the actual presoldered pin diameter; check against
+   the physical board, not just a generic 0.1" header assumption.
+2. **XIAO pin order** — the module is placed USB-down, back side; the
+   pad-to-net map in `generate_pcb.py` encodes the 180° rotation of
+   Seeed's USB-up pinout drawing. Sanity-check against a physical board
+   before soldering.
+3. **XIAO standoff/pin length** — `design_params.py XIAO_MODULE_STANDOFF`
+   (6.0mm) is an estimate for how far the module hangs off the carrier;
+   measure the real pin length before finalizing the enclosure thickness.
+4. **PCM12SMTR land pattern** — approximated; pull the real drawing from the
    C&K datasheet.
-4. **SPH0645 land pattern** — approximated from the Knowles datasheet; pad
-   positions and the 0.7 mm port-hole keepout must match exactly (acoustic
-   part, no slop).
-5. **Choc contact-pin handedness** — pin 2 at (5.0, −3.8) assumes the common
+5. **Mic breakout footprint** — `MIC_BRK_L/W` and pin pitch are
+   approximate; measure the physical breakout (Adafruit #3421 or
+   equivalent) and adjust before finalizing the front-wall window size.
+6. **Choc contact-pin handedness** — pin 2 at (5.0, −3.8) assumes the common
    variant; check against a physical switch.
-6. Run DRC after routing, obviously.
+7. Run DRC after routing, obviously.
 
 ## Coordinate convention
 

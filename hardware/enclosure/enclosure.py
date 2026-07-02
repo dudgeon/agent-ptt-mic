@@ -10,7 +10,17 @@ Two printed parts:
 
 All dimensions come from hardware/design_params.py. Coordinates:
 X = board X (centreline 0), Y = PCB_L/2 - board_y (so +Y is the mic/top
-end), Z = 0 at the PCB front face, +Z toward the user.
+end), Z = 0 at the PCB front face, +Z toward the user, -Z toward the back
+lid.
+
+2026-07-02 revision: the XIAO module is now header-mounted on the carrier's
+BACK (see design_params.py XIAO_MODULE_STANDOFF/XIAO_TOTAL_DEPTH) rather
+than flush-mounted on the front, since the pre-soldered XIAO SKU Geoff
+ordered needs standoff clearance for its pins, not a flush reflow joint.
+That's the whole reason BACK_GAP -- and this shell's overall thickness --
+grew substantially from the previous revision. The mic is now a breakout
+module sitting on the front (its own onboard port, not a PCB pass-through
+hole), and the status LED is a plain THT part.
 
 Print orientation: front shell face-down (clean front surface, walls and
 bosses build upward, no supports needed except small bridges over the USB
@@ -85,12 +95,23 @@ def _front_body():
                 Z_FRONT_IN - 0.1, Z_FRONT_OUT + 0.1, 1.5)
     shell = shell.cut(hole.translate((px, ycad(pyb), 0)))
 
-    # mic acoustic hole + LED window in the front wall
-    for (x, yb), d in ((P.MIC_POS, P.MIC_SHELL_HOLE),
-                       (P.LED_POS, P.LED_WINDOW)):
-        shell = shell.cut(
-            cq.Workplane("XY", origin=(x, ycad(yb), Z_FRONT_IN - 0.1))
-            .circle(d / 2).extrude(P.WALL + 0.2))
+    # Mic breakout window: sized to the breakout's own footprint (plus
+    # clearance) rather than a pinhole, since it's a module with its own
+    # onboard port whose exact location isn't pinned down until the
+    # physical part is in hand (see design_params.py MIC_BRK_* VERIFY
+    # notes) -- an oversized window guarantees sound gets through
+    # regardless of where on the breakout the port actually sits.
+    mx, myb = P.MIC_POS
+    mic_hole = rbox(P.MIC_BRK_L + 2 * P.MIC_SHELL_CLEAR,
+                    P.MIC_BRK_W + 2 * P.MIC_SHELL_CLEAR,
+                    Z_FRONT_IN - 0.1, Z_FRONT_OUT + 0.1, 1.0)
+    shell = shell.cut(mic_hole.translate((mx, ycad(myb), 0)))
+
+    # LED window in the front wall
+    lx, lyb = P.LED_POS
+    shell = shell.cut(
+        cq.Workplane("XY", origin=(lx, ycad(lyb), Z_FRONT_IN - 0.1))
+        .circle(P.LED_WINDOW / 2).extrude(P.WALL + 0.2))
 
     # right-wall slot for the latch slide knob
     knob_zc = P.SLIDE_BODY_H / 2
@@ -100,8 +121,14 @@ def _front_body():
             .extrude(P.WALL + P.SHELL_CLEAR + 0.2))
     shell = shell.cut(slot)
 
-    # bottom-wall USB-C opening (XIAO's own connector at the PCB bottom edge)
-    usb_zc = P.XIAO_PCB_T + P.XIAO_USB_H / 2
+    # Bottom-wall USB-C opening. The module now hangs off the carrier's
+    # BACK via its header standoff, so the connector sits deep in the back
+    # cavity, not just above the carrier front face -- walk the Z-stack
+    # from the carrier back face (Z_PCB_BOT) outward: standoff gap, then
+    # the module's own PCB thickness, then the USB-C connector body
+    # (component side faces away from the carrier).
+    xiao_top = Z_PCB_BOT - P.XIAO_MODULE_STANDOFF - P.XIAO_PCB_T
+    usb_zc = xiao_top - P.XIAO_USB_H / 2
     usb = (cq.Workplane("XZ", origin=(0, -(CAV_L / 2 - 0.1), usb_zc))
            .rect(P.USB_CUT_W, P.USB_CUT_H)
            .extrude(P.WALL + P.SHELL_CLEAR + 0.2))

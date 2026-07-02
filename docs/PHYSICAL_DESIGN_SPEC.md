@@ -228,3 +228,54 @@ The design pass described in `docs/HANDOFF.md` was executed. Artifacts:
    bezel): at standard Choc pitch, per-key openings would leave <1 mm FDM
    walls between caps, which would not survive printing or use.
 
+### v2 revision — mounting overhaul (2026-07-02)
+
+Geoff pointed out the design had more SMD scope than the project actually
+needs: the XIAO already carries all the real complexity (RP2040, USB,
+flash), so this board should be "just a breakout for switches and a mic
+module" — and separately confirmed the XIAO he ordered is the
+**pre-soldered/header** SKU (`docs/SPEC.md` §4), which changes how it
+physically mounts. Both points landed as one revision:
+
+- **XIAO mounting:** was flush-reflow via castellated edges (assumed the
+  bare SKU); now header-pin mounted on the carrier's **back**, since the
+  pre-soldered module's pins need standoff clearance, not a flush joint.
+  Its own presoldered pins pass through the carrier and solder there — no
+  separate header/socket part needed. This is the dominant driver of the
+  enclosure thickness change below.
+- **Mic:** back to a breakout **module** (matching the original
+  breadboard-track part) instead of a bare SMD chip — Geoff's original
+  plan called for a module, and the bare-chip choice was this session's
+  invention, not a requirement.
+- **Status LED:** swapped from the addressable SMD WS2812B to a plain THT
+  LED + resistor, per Geoff's explicit "keep it, but make it simple THT"
+  — firmware now just drives GPIO3 high/low instead of bit-banging WS2812
+  timing.
+- **Passives:** switched from 0603 SMD to THT (ceramic disc caps, axial
+  resistor) for consistency — no reason to leave fine-pitch SMD on an
+  otherwise all-THT board.
+
+**Net result:** every active component is now through-hole or header-mount
+— hand-solderable with a plain iron, no reflow/hot-air required anywhere.
+**Trade-off:** the enclosure grew from ~14.3mm to **~22.6mm thick**, since
+the header-mounted module needs real standoff clearance (`BACK_GAP` went
+from 3.2mm to 11.5mm) instead of sitting flush. This is a direct,
+unavoidable consequence of the mounting method, not a modeling choice —
+flagged here because it changes the device's hand-feel from "slim
+clicker" toward "chunkier remote," which is worth Geoff being aware of
+even though it wasn't separately asked about.
+
+**Open follow-on, not yet resolved:** the vendor-sourcing research in
+`hardware/ASSEMBLY_SOURCING.md` was done against the *v1* (bare-SMD/
+flush-mount) design, where the XIAO module had its own JLCPCB
+assembly-library listing implying automated placement. That listing was
+almost certainly for the bare/castellated SKU meant for reflow — a
+header-pin module standing off the board isn't a typical
+pick-and-place/wave-solder candidate, so full vendor turnkey (zero solder
+for *every* part, including the module) is now doubtful. The switches,
+mic breakout, and LED/passives are still ordinary THT vendor-assembly
+work; the XIAO itself (14 big, easy pins) may end up being the one thing
+still worth self-soldering even in an otherwise-turnkey order. Needs a
+fresh vendor check before the cost comparison in `hardware/
+assembly_options.html` (built against v1) can be trusted for v2.
+

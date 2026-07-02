@@ -1,8 +1,9 @@
-"""Zoomed-in detail render of the mic + LED region, front and back.
+"""Zoomed-in detail render of the mic + LED region, front side.
 
-The mic (3.5 x 2.65 x 0.98 mm) is easy to miss in the full-board renders
-since the board is 44 x 104 mm -- this exists purely to make it visible
-for review. Not part of the regular build pipeline.
+2026-07-02: the mic is now a breakout module (~18 x 12mm) on the front,
+big enough to be visible in the regular full-board renders -- this script
+is kept mainly for the LED close-up and as a quick visual check that both
+parts sit where design_params.py says they should.
 
 Run after mockup.py:  python3 hardware/mockup/render_mic_detail.py
 """
@@ -81,18 +82,18 @@ def main():
     meshes = {n: load_part(n) for n in names}
 
     mic_x, mic_yb = P.MIC_POS
-    mic_center = (mic_x, ycad(mic_yb), -P.PCB_T / 2 - P.MIC_H / 2)
-    render(names, meshes, colors, "mic_detail_back.png",
-           center=mic_center, half=6.0, elev=-25, azim=-60,
-           title=f"Mic detail (back side) — MK1 SPH0645LM4H-B, "
-                 f"{P.MIC_L}x{P.MIC_W}x{P.MIC_H}mm, at board (0, 6.5)")
+    mic_center = (mic_x, ycad(mic_yb), P.MIC_BRK_STANDOFF + P.MIC_BRK_H / 2)
+    render(["pcb", "mic"], meshes, colors, "mic_detail_front.png",
+           center=mic_center, half=14.0, elev=30, azim=-60,
+           title=f"Mic detail (front side) — MK1 breakout module, "
+                 f"~{P.MIC_BRK_L}x{P.MIC_BRK_W}mm, at board {P.MIC_POS}")
 
     led_x, led_yb = P.LED_POS
-    led_center = (led_x, ycad(led_yb), P.LED_H / 2)
+    led_center = (led_x, ycad(led_yb), P.LED_THT_H / 2)
     render(["pcb", "led"], meshes, colors, "led_detail_front.png",
            center=led_center, half=6.0, elev=30, azim=-60,
-           title=f"LED detail (front side) — D1 WS2812B, "
-                 f"{P.LED_SIZE}x{P.LED_SIZE}x{P.LED_H}mm, at board (14, 8)")
+           title=f"LED detail (front side) — D1 3mm THT LED + R1, "
+                 f"at board {P.LED_POS}")
 
 
 if __name__ == "__main__":
