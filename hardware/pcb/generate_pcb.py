@@ -4,7 +4,8 @@ Produces a netlisted, fully-placed 2-layer board: XIAO RP2040 module
 (pre-soldered/header variant -- through-hole pins, mounted on the BACK),
 5x Kailh Choc V1 keyswitches, PCM12SMTR side-actuated latch slide, an I2S
 mic BREAKOUT MODULE (header-mounted, front side -- not a bare SMD chip),
-a plain THT status LED + series resistor, THT decoupling passives,
+an addressable RGB status LED (v2.1, see design_params.py for why),
+THT decoupling passives,
 mounting holes, board outline, and GND zones on both copper layers.
 
 2026-07-02 revision: every active part on this board is now a
@@ -51,7 +52,7 @@ def pos(x, y, angle=None):
 NET_NAMES = [
     "", "GND", "3V3", "5V",
     "PTT", "LATCH", "KEY_APPROVE", "KEY_REMEMBER", "KEY_REJECT", "KEY_MODE",
-    "I2S_SD", "I2S_BCLK", "I2S_LRCLK", "LED_DATA", "LED_A", "SPARE_D9",
+    "I2S_SD", "I2S_BCLK", "I2S_LRCLK", "LED_DATA", "LED_DIN", "SPARE_D9",
 ]
 NETS = {name: Net(number=i, name=name) for i, name in enumerate(NET_NAMES)}
 
@@ -226,17 +227,20 @@ def mic_breakout(ref, cx, cy):
               extra_items=body, smd=False)
 
 
-def led_tht(ref, cx, cy):
-    """Plain 3mm THT LED. Anode (long lead) -> LED_A (via R1 from
-    LED_DATA/GPIO3), cathode -> GND."""
-    half = P.LED_THT_LEAD_SPACING / 2
+def led_addressable(ref, cx, cy):
+    """WS2812B/SK6812-style 5050 addressable RGB LED -- v2.1: reintroduced
+    despite not being strictly required, because it's the only way to get
+    full RGB from the single GPIO the pin budget actually has spare (see
+    design_params.py LED section for the full reasoning). Data in via R1
+    from LED_DATA/GPIO3; DOUT unused (not chained to a second LED)."""
     pads = [
-        tht_pad(1, -half, 0, 1.4, 0.8, "LED_A"),   # anode
-        tht_pad(2, half, 0, 1.4, 0.8, "GND"),      # cathode
+        smd_pad(1, -2.45, -1.6, 1.5, 1.0, "3V3"),
+        smd_pad(2, -2.45, 1.6, 1.5, 1.0, None),        # DOUT, unused
+        smd_pad(3, 2.45, 1.6, 1.5, 1.0, "GND"),
+        smd_pad(4, 2.45, -1.6, 1.5, 1.0, "LED_DIN"),
     ]
-    body = [FpCircle(center=Position(X=0, Y=0), end=Position(X=P.LED_THT_DIA / 2, Y=0),
-                     layer="F.SilkS", width=0.12)]
-    return fp("LED_3mm_THT", ref, pos(cx, cy), pads, extra_items=body, smd=False)
+    body = outline_lines(P.LED_SIZE, P.LED_SIZE)
+    return fp("WS2812B_5050", ref, pos(cx, cy), pads, extra_items=body)
 
 
 def passive_0603(ref, cx, cy, net1, net2, angle=None):
@@ -341,15 +345,16 @@ def build():
     fps.append(slide_pcm12("SW6", P.PCB_W / 2 - P.SLIDE_BODY_W / 2,
                            P.SLIDE_POS_Y))
     fps.append(mic_breakout("MK1", *P.MIC_POS))
-    fps.append(led_tht("D1", *P.LED_POS))
+    fps.append(led_addressable("D1", *P.LED_POS))
     fps.append(xiao_rp2040("U1", 0.0, P.XIAO_POS_Y))
 
-    # Passives: all THT now (radial/axial leads) -- no fine-pitch SMD parts
-    # left on the board at all. Mic decoupling near mic, LED resistor near
-    # LED, bulk cap near the XIAO's 3V3 pins.
+    # Passives: THT (radial/axial leads) except the LED itself, which is
+    # the one deliberately-reintroduced SMD part (see design_params.py).
+    # Mic decoupling near mic, LED data-line resistor near LED, bulk cap
+    # near the XIAO's 3V3 pins.
     fps.append(passive_tht("C1", -16.0, 20.0, "3V3", "GND", spacing=5.0))
     fps.append(passive_tht("C2", 9.0, 20.0, "3V3", "GND", spacing=5.0))
-    fps.append(passive_tht("R1", 14.0, 13.5, "LED_DATA", "LED_A",
+    fps.append(passive_tht("R1", 14.0, 13.5, "LED_DATA", "LED_DIN",
                            spacing=P.RES_THT_LEAD_SPACING))
     fps.append(passive_tht("C3", -13.0, 84.0, "3V3", "GND",
                            spacing=5.0))  # clear of U1

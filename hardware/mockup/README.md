@@ -4,7 +4,9 @@ Dimensionally representative assembly of the whole device: carrier PCB,
 XIAO RP2040 module (header-mounted on the back, USB-C facing away into
 the back shell), 5× Kailh Choc V1 switches + MBK-profile caps, PCM12SMTR
 latch slide (knob through the right wall), an I2S mic breakout module
-(front side), a plain THT LED, and both shell halves. Every envelope comes
+(front side), an addressable RGB LED (v2.1 — see
+`docs/PHYSICAL_DESIGN_SPEC.md` §7 for why it's SMD again), and both shell
+halves. Every envelope comes
 from `../design_params.py` — the same values that drive the PCB and
 enclosure, so the mockup can't silently disagree with them.
 

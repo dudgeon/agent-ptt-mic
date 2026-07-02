@@ -4,12 +4,19 @@
 RP2040 module (**pre-soldered/header SKU**, mounted on the BACK via its own
 header pins, USB-C facing away into the back shell), 5× Kailh Choc V1
 keyswitches, the PCM12SMTR side-actuated latch slide, an I2S mic
-**breakout module** (front side, THT header), a plain **THT LED** + THT
-passives — every active part is now through-hole/header-mount, hand-
-solderable with a plain iron (2026-07-02 revision; see
+**breakout module** (front side, THT header), an **addressable RGB LED**
+(WS2812B/SK6812-style — the one deliberately-reintroduced SMD part, see
+below) + THT passives — every other active part is through-hole/header-
+mount, hand-solderable with a plain iron (2026-07-02 revision; see
 `docs/PHYSICAL_DESIGN_SPEC.md` §7 for why). Net/pin assignments follow
 `docs/SPEC.md` §8 plus the status LED on spare D10/GPIO3 — the full
 netlist table is in `../BOM.md`.
+
+**Why the LED is SMD again:** Geoff asked for a true RGB status LED. A
+discrete (non-addressable) RGB LED needs 3 independent GPIOs; the locked
+pin map only has 2 spares. An addressable LED needs just 1 data pin, so
+it's the only option that fits — still hand-solderable (large gull-wing
+pads), just not through-hole.
 
 ## Files
 

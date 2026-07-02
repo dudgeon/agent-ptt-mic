@@ -89,11 +89,11 @@ def main():
                  f"~{P.MIC_BRK_L}x{P.MIC_BRK_W}mm, at board {P.MIC_POS}")
 
     led_x, led_yb = P.LED_POS
-    led_center = (led_x, ycad(led_yb), P.LED_THT_H / 2)
+    led_center = (led_x, ycad(led_yb), P.LED_H / 2)
     render(["pcb", "led"], meshes, colors, "led_detail_front.png",
            center=led_center, half=6.0, elev=30, azim=-60,
-           title=f"LED detail (front side) — D1 3mm THT LED + R1, "
-                 f"at board {P.LED_POS}")
+           title=f"LED detail (front side) — D1 addressable RGB (5050) "
+                 f"+ R1, at board {P.LED_POS}")
 
 
 if __name__ == "__main__":

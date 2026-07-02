@@ -114,9 +114,11 @@ def build_mic():
 
 
 def build_led():
-    """Plain 3mm THT LED (dome) + its series resistor, front side."""
+    """Addressable RGB LED (5050 SMD package) + its data-line series
+    resistor, front side -- v2.1, see design_params.py for why this
+    reverted from a plain THT LED (pin-budget constraint, not aesthetics)."""
     x, yb = P.LED_POS
-    led = cyl_at(P.LED_THT_DIA, P.LED_THT_H, x, yb, 0)
+    led = box_at(P.LED_SIZE, P.LED_SIZE, P.LED_H, x, yb, 0, r=0.5)
     res = box_at(P.RES_THT_LEN, P.RES_THT_DIA, P.RES_THT_DIA,
                  x, yb + 5.5, 0.5)
     return led.union(res)

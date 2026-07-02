@@ -275,7 +275,30 @@ pick-and-place/wave-solder candidate, so full vendor turnkey (zero solder
 for *every* part, including the module) is now doubtful. The switches,
 mic breakout, and LED/passives are still ordinary THT vendor-assembly
 work; the XIAO itself (14 big, easy pins) may end up being the one thing
-still worth self-soldering even in an otherwise-turnkey order. Needs a
-fresh vendor check before the cost comparison in `hardware/
-assembly_options.html` (built against v1) can be trusted for v2.
+still worth self-soldering even in an otherwise-turnkey order. Tracked as
+issue #15, and re-verified/resolved in the v2.1 cost-research pass below.
+
+### v2.1 revision — RGB status LED, addressable after all (same day)
+
+Geoff asked for the status LED to be RGB "for future status options,"
+noting it doesn't need to be addressable. Implementing it surfaced a real
+constraint: a genuine discrete RGB LED needs 3 independent GPIOs (separate
+R/G/B anodes), and the locked pin map (`docs/SPEC.md` §8) assigns 9 of the
+XIAO's 11 edge-pad GPIOs, leaving only 2 spares (D9, D10) — one short, and
+no multiplexing trick closes that gap (charlieplexing only saves pins when
+LED count exceeds pin count, which isn't the case for a single 3-channel
+part). Asked Geoff to pick between three resolutions (addressable LED,
+freeing a 3rd pin from the locked map, or dropping to 2-channel color);
+**addressable LED was chosen.**
+
+D1 is now a WS2812B/SK6812-style addressable RGB LED again, on the single
+GPIO (D10) the budget actually has spare. This is the one deliberately
+reintroduced SMD part on the board — still hand-solderable (large
+gull-wing pads, not a reflow-only part like the v1 bare mic chip), and
+firmware only needs to emit solid colors, not run animations, per Geoff's
+"doesn't need to be addressable" (read here as "isn't a requirement," not
+"must not be used" — it turned out to be the only option that fit the pin
+budget). See `hardware/BOM.md` for the updated part/netlist and
+`hardware/ASSEMBLY_SOURCING.md` for the re-run vendor/cost research this
+prompted.
 

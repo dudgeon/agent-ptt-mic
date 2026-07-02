@@ -111,18 +111,29 @@ SLIDE_KNOB_EXT = 2.4      # knob protrusion past PCB edge at mid-throw
 SLIDE_TRAVEL = 2.0        # end-to-end actuator travel
 
 # --------------------------------------------------------------------------
-# Plain THT status LED + series resistor, front side, D10/GPIO3.
-# Replaces the addressable WS2812B from the previous revision -- simpler,
-# hand-solderable, no per-color addressing (firmware just drives GPIO3
-# high/low instead of bit-banging WS2812 timing).
+# Addressable RGB status LED (WS2812B/SK6812-style, 5050 package), front
+# side, D10/GPIO3 -- v2.1 revision (2026-07-02b).
+#
+# Geoff asked for a true RGB status LED ("for future status options") but
+# said it doesn't need to be addressable. It turns out the pin budget
+# forces the addressable choice anyway: a genuine discrete RGB LED needs 3
+# independent GPIOs (separate R/G/B anodes), and docs/SPEC.md §8's locked
+# pin map leaves only 2 spares (D9, D10) after the 9 assigned signals --
+# one short. An addressable LED needs just 1 data pin for full RGB, which
+# fits the existing D10 allocation exactly. Firmware only needs to drive
+# solid colors (per Geoff's "doesn't need to be addressable" -- no fancy
+# animation requirement), it just has to speak the WS2812 protocol to do
+# even that, since that's how the color is set on this class of part.
+# Still hand-solderable: 5050 pads are large gull-wing/castellated-corner
+# pads reachable with a fine-tip iron, not a reflow-only part like the
+# bare mic chip was in v1.
 # --------------------------------------------------------------------------
-LED_THT_DIA = 3.0         # 3mm THT LED
-LED_THT_LEAD_SPACING = 2.0
-LED_THT_H = 4.5           # dome height above PCB
-LED_WINDOW = 3.4          # enclosure light hole dia
-RES_THT_LEN = 6.5         # axial resistor body length (1/4W)
-RES_THT_DIA = 2.2
-RES_THT_LEAD_SPACING = 10.0  # formed/bent lead spacing for vertical mount
+LED_SIZE = 5.0            # 5050 package, square
+LED_H = 1.6               # package height above PCB
+LED_WINDOW = 3.4          # enclosure light window dia
+RES_THT_LEN = 6.5         # axial resistor body length (1/4W) -- data-line
+RES_THT_DIA = 2.2         # series resistor (signal integrity, not current-
+RES_THT_LEAD_SPACING = 10.0  # limiting -- WS2812 draws its own current)
 
 # --------------------------------------------------------------------------
 # Carrier PCB
