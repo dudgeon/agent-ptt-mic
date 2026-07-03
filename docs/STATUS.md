@@ -142,20 +142,25 @@ Dudgeon & Claude` per Geoff's request. Gerbers + drill + CPL exported to
 `hardware/pcb/fab/` (`companion_carrier_v0_gerbers.zip` is upload-ready
 for JLCPCB/PCBWay quoting).
 
-1. **Detailed vendor quotes — DONE, real Gerber-upload quotes in hand.**
-   Geoff uploaded `companion_carrier_v0_gerbers.zip` directly at both
-   cart.jlcpcb.com/quote and pcbway.com/QuickOrderOnline.aspx (the
-   browser-automation session couldn't do this itself — file-sharing
-   restriction, not a vendor block). Both parsed the routed board cleanly
-   with **zero DFM errors/warnings**, and both returned prices **identical
-   to the earlier dimension-based estimates**: JLCPCB $6.10 + $28.72
-   shipping = **$34.82**; PCBWay $19.48 + $25.71 = **$45.19**. Real Gerbers
-   changing nothing about the price is itself a useful confirmation —
-   nothing about the actual routing surprised either vendor's pricing
-   engine. Firm PCBA (assembly) numbers remain the one open item: both
-   vendors require account login to get past a generic estimate into a
-   real BOM-reviewed quote — full detail in `hardware/ASSEMBLY_SOURCING.md`
-   Round 4. **No order without Geoff's go-ahead** (standing rule).
+1. **Detailed vendor quotes — DONE, including a real firm PCBA number.**
+   Geoff uploaded the real Gerbers to both vendors (bare-fab: JLCPCB
+   $34.82, PCBWay $45.19, both DFM-clean, matching the earlier
+   dimension-based estimates exactly) then signed into both accounts to
+   push past the login wall into real assembly quoting. Built
+   `hardware/pcb/fab/companion_carrier-bom.csv` and a JLCPCB-specific CPL
+   reformat (`companion_carrier-cpl-jlcpcb.csv` — JLCPCB's CPL column
+   format turned out to differ from PCBWay's/kicad-cli's default and
+   rejected the first attempt outright) to get a **real, itemized JLCPCB
+   PCBA quote: $56.08 total for 5 boards** (SW6 latch switch + one cap
+   auto-matched to real in-stock catalog parts and vendor-placed;
+   everything else — XIAO, mic breakout, 5 keyswitches, LED, remaining
+   passives — correctly left customer-supplied, matching the BOM's
+   long-standing sourcing plan). Declined a catalog match for the LED
+   that would have forced a PCBA-tier change and physically grown the
+   board's fabricated size — flagged as a decision needing sign-off, not
+   made unilaterally. Full blow-by-blow in
+   `hardware/ASSEMBLY_SOURCING.md` Round 5. **No order placed — saved to
+   cart only, no payment step touched** (standing rule).
 2. Geoff reviews the mockup renders (`hardware/mockup/output/renders/`)
    and the routed-board renders (`hardware/pcb/fab/board_top.png`,
    `board_bottom.png`); layout deviations in

@@ -1,0 +1,9 @@
+Comment,Designator,Footprint,JLCPCB Part #（optional）
+Seeed Studio XIAO RP2040 Pre-Soldered,U1,XIAO_RP2040_Header,
+Kailh Choc V1 (PG1350) keyswitch,"SW1,SW2,SW3,SW4,SW5",Kailh_Choc_V1,
+C&K OS102011MA1QN1 slide switch,SW6,CK_OS102011MA1QN1,C226259
+I2S MEMS mic breakout (Adafruit SPH0645-style),MK1,MicBreakout_SPH0645-style,
+WS2812B/SK6812 addressable RGB LED (5050),D1,LED_5050_Addressable,
+100nF ceramic capacitor THT,"C1,C2",CAP-THT_5mm,
+10uF electrolytic/ceramic capacitor THT,C3,CAP-THT_5mm,
+300-500ohm 1/4W axial resistor,R1,RES-THT_10mm,

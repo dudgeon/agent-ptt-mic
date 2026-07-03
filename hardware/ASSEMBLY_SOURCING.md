@@ -190,6 +190,91 @@ firm PCBA number from either vendor now requires Geoff (or whoever owns
 the order) to sign in themselves and carry the already-uploaded Gerber
 into the assembly flow.
 
+### Round 5 (2026-07-03): Geoff logged into both accounts — real, itemized, DFM-reviewed PCBA quote obtained from JLCPCB
+
+Geoff signed into both his JLCPCB and PCBWay accounts, unblocking the
+assembly flow past the login wall from Round 4. This surfaced two
+existing carts (both accounts had unrelated pre-existing orders —
+handled carefully to touch only our line items). From there:
+
+**A real BOM + CPL round-trip, with two format mismatches found and
+fixed on the way:**
+1. JLCPCB's assembly wizard wants a BOM file matching their exact
+   template (`Comment, Designator, Footprint, JLCPCB Part #`) — built
+   `hardware/pcb/fab/companion_carrier-bom.csv` from `hardware/BOM.md`'s
+   real part list, including the verified LCSC part `C226259` for SW6.
+2. First CPL upload attempt (`companion_carrier-cpl.csv`, the
+   PCBWay-style `Ref,Val,Package,PosX,PosY,Rot,Side` format from the
+   `kicad-cli pos` export) failed outright: **"Failed processing the CPL
+   file."** JLCPCB's actual required format is different —
+   `Designator, Mid X, Mid Y, Layer, Rotation` with units embedded in
+   each coordinate (`"60.0000mm"`) and title-case `Top`/`Bottom`. Built
+   `hardware/pcb/fab/companion_carrier-cpl-jlcpcb.csv` with the same
+   underlying coordinates, reformatted to match — this one processed
+   cleanly. (PCBWay silently accepted the original PosX/PosY-format CPL
+   without complaint earlier in Round 4 — but PCBWay's flow defers to a
+   human review queue rather than parsing it live, so that "acceptance"
+   never actually validated the format. **There is no single universal
+   CPL format between vendors** — expect to reformat per vendor.)
+3. With both files parsed, JLCPCB auto-matched **2 of 7 detected parts**
+   against real catalog stock: SW6 → our exact chosen part (C&K
+   OS102011MA1QN1, LCSC `C226259`) and C3 → a generic 10µF electrolytic
+   (LCSC `C7461249`). The other 5 (C1/C2, D1, MK1, R1, the 5 Kailh Choc
+   switches) came back **"No Part Selected"** — exactly the customer-
+   supplied parts our BOM always intended them to be. Searching D1
+   (WS2812B/SK6812) in JLCPCB's catalog found a real, well-stocked match
+   (WS2812B-V6, LCSC `C52917433`, 21,593 units in stock) — but selecting
+   it forced a tier change from Economic to **Standard PCBA, with a **$25
+   per-side setup fee** and, more importantly, **would have physically
+   changed the fabricated board size** (JLCPCB adds edge rails, growing
+   the board from 44×104mm to 70×104mm). Declined ("Do not place this
+   part") rather than make that call unilaterally — a good example of
+   how "just match more parts to the catalog" isn't free.
+4. Searched the Kailh Choc V1 keyswitches too: JLCPCB does stock real
+   Kailh Choc parts (`CPG135001D01/D02/D03` for red/brown/white, plus a
+   cheaper `CPG135001D01-1` variant) but **every listing showed
+   "Inventory shortage"** (0 units) — consistent with this project's
+   standing finding that these switches aren't reliably fab-house-stocked
+   and are better sourced directly (splitkb.com etc., see `hardware/BOM.md`).
+
+**Resulting real, itemized JLCPCB quote (5 boards, Economic PCBA, SW6 +
+C3 vendor-placed, everything else customer-supplied):**
+
+| Line | Cost |
+|---|---|
+| PCB (engineering fee $4.00 + board $2.10) | $6.10 |
+| PCBA setup fee | $8.18 |
+| Stencil | $1.53 |
+| Components (2 items: SW6 + C3) | $3.42 |
+| Extended components fee | $3.07 |
+| SMT Assembly | $0.02 |
+| Hand-soldering labor fee | $3.58 |
+| Manual Assembly | $0.41 |
+| Nitrogen reflow soldering | $0.90 |
+| **Merchandise total** | **$27.21** |
+| Shipping (DHL, est. 2026-07-06 ship date) | $28.87 |
+| **Grand total, 5 boards** | **$56.08** |
+
+Saved to cart (not checked out — no payment step touched, consistent
+with the standing "no fab order without Geoff's go-ahead" rule).
+**$56.08 for 5 boards with the slide switch and one cap vendor-placed,
+everything else (XIAO, mic breakout, 5 keyswitches, LED, remaining
+passives) left for hand-soldering** — this is now a real, firm,
+line-itemized number, not an estimate. It's notably below every
+previous Option C/D estimate in `hardware/assembly_options.html`
+($210–320 range) — but note this JLCPCB quote only vendor-places **2 of
+17 components**; most of the old estimates assumed the vendor placing
+everything *except* the two modules (~10+ parts), which is a
+meaningfully bigger scope of vendor work than what's quoted here. The
+options doc's cost tiers and this real number aren't directly
+comparable without adjusting for that scope difference — flagged for a
+follow-up pass rather than silently overwriting the existing estimates.
+
+PCBWay's assembly order (from Round 4) remains in their manual-review
+queue with Gerber + CPL attached but no BOM — could be pushed further
+with `hardware/pcb/fab/companion_carrier-bom.csv` (once reformatted to
+PCBWay's own template) if a second real quote is wanted for comparison.
+
 ### What's still open after this round
 
 - **Firm PCBA numbers from either vendor** — both require account
