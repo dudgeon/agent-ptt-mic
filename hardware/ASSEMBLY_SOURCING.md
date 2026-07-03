@@ -21,10 +21,11 @@ different numbers.
 Help Center policy pages, and PCBWay's Assembly quote calculator —
 actual tool output, not search snippets. Board dimensions used: 44×104mm,
 2-layer, qty 5, matching `hardware/design_params.py` `PCB_W`/`PCB_L`.
-(The board is placed+netlisted but not yet routed — issue #13 — so this
-is a dimension/qty/layer-count quote, not a full Gerber-based DFM quote;
-real copper density could shift the number slightly once routing is
-done, but fab pricing at this tier is driven mostly by size/layers/qty.)
+(At the time of this first pass the board was placed+netlisted but not
+yet routed — issue #13 — so this was a dimension/qty/layer-count quote,
+not a full Gerber-based DFM quote. **Update:** the board is now routed
+and the real Gerbers have since been uploaded directly — see "Round 4"
+below — and returned the identical price, confirming this estimate held.)
 
 ### Bare PCB fab: JLCPCB is dramatically cheaper than PCBWay for this board
 
@@ -155,14 +156,49 @@ solder-mask checks) rather than a dimension-based estimate. The
 dimension-based numbers above have now been independently reproduced
 three times and are a reliable stand-in until then.
 
+### Round 4 (2026-07-02, same day): Geoff uploaded the real Gerbers — DFM-reviewed quotes confirmed on both vendors
+
+Geoff placed `companion_carrier_v0_gerbers.zip` directly into both
+vendors' quote tools (the file-sharing block from Round 3 is a browser-
+automation limitation, not something a human hits). Both parsed it
+cleanly with **no DFM errors or warnings**, just each vendor's standard
+"auto-preview may not be pixel-perfect" disclaimer:
+
+| Vendor | Detected board | PCB cost (5 pcs) | Shipping | Total | Source |
+|---|---|---|---|---|---|
+| **JLCPCB** | "2 layer board of 104×44mm (4.09×1.73 inches)" — exact match | $6.10 ($4.00 engineering fee + $2.10 board) | $28.72 DHL Express | **$34.82** | Live upload, [cart.jlcpcb.com/quote](https://cart.jlcpcb.com/quote), 2026-07-02 |
+| **PCBWay** | "2 layers board of 44×104mm (1.73×4.09 inches)" — exact match | $19.48 | $25.71 DHL | **$45.19** | Live upload, [pcbway.com/QuickOrderOnline.aspx](https://www.pcbway.com/QuickOrderOnline.aspx), 2026-07-02 |
+
+**These numbers are identical to the dimension-based estimates from
+Rounds 1–3** — real Gerber upload changed nothing about the bare-fab
+price for this board, which confirms the earlier estimates weren't
+missing anything material (no unusual copper density, hole count, or
+routing complexity that would have moved the price). Both vendors
+showed the actual routed board preview (front + back copper visible),
+confirming the file parsed correctly end to end.
+
+**Assembly quoting hit the same wall from both sides:** JLCPCB requires
+an account login before it will show a real BOM-based PCBA number (the
+"PCB Assembly" toggle works once a Gerber is attached, but clicking
+"Next" redirects to a login page). PCBWay's manual-entry assembly
+estimate doesn't need login (still $88/5 boards, matching Rounds 2–3),
+but actually adding the assembly order to cart — the step that would
+let a real BOM/CPL get reviewed — also redirects to account login/sign-up.
+**Neither of us created an account or logged in** — that's a real
+account-creation/login action, out of scope for this pass. Getting a
+firm PCBA number from either vendor now requires Geoff (or whoever owns
+the order) to sign in themselves and carry the already-uploaded Gerber
+into the assembly flow.
+
 ### What's still open after this round
 
-- **A true Gerber-upload quote** — blocked this round by browser
-  session file-sharing, not by either vendor. See Round 3 above.
+- **Firm PCBA numbers from either vendor** — both require account
+  login to get past the generic estimate stage; bare-fab numbers are
+  now fully confirmed (Round 4), assembly numbers are not.
 - **PCBWay's exact stance on placing the two specific irregular modules**
   (vs. a generic same-part-count board) is still unconfirmed — the $88
-  figure is a calculator estimate, not an engineering-reviewed quote.
-  Needs real Gerbers + BOM/CPL uploaded (files now exist and are ready).
+  figure is a calculator estimate, not an engineering-reviewed quote,
+  and getting a real one needs the login step above.
 - JLCPCB consignment's real-world friction (shipping modules to China,
   customs, lead time added) wasn't feasible to fully quantify without
   placing a real trial order — the fee schedule above is real and
